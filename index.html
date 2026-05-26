@@ -4219,7 +4219,7 @@ window.App = App;
   }
   const style = document.createElement('style');
   style.textContent = `
-    @media (max-width: 430px) and (pointer: coarse) {
+    @media (max-width: 768px) and (any-pointer: coarse) {
       html, body { overflow: hidden; height: 100dvh; }
       body { background: #0A0908 !important; }
     }
@@ -4251,13 +4251,16 @@ const ACCENT_OPTIONS = [
 const FONT_OPTIONS = ['Anton', 'Bebas Neue', 'Oswald', 'Inter'];
 
 function useIsMobile() {
-  const [mobile, setMobile] = React.useState(() => window.innerWidth <= 430 && 'ontouchstart' in window);
+  const detect = () => {
+    const narrow = window.innerWidth <= 768;
+    const touch = navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
+    return narrow && touch;
+  };
+  const [mobile, setMobile] = React.useState(detect);
   React.useEffect(() => {
-    const mq = window.matchMedia('(max-width: 430px) and (pointer: coarse)');
-    const update = () => setMobile(mq.matches);
-    update();
-    mq.addEventListener('change', update);
-    return () => mq.removeEventListener('change', update);
+    const update = () => setMobile(detect());
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
   }, []);
   return mobile;
 }
