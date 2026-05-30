@@ -64,7 +64,7 @@ done
 # Inline JSX files (Babel-compiled in browser)
 for f in tweaks-panel.jsx app-home.jsx app-workout.jsx app-workout-card.jsx \
          app-workout-rest.jsx app-stats.jsx app-settings.jsx app-plates.jsx \
-         app-recovery.jsx app-coach.jsx app-main.jsx canvas.jsx; do
+         app-recovery.jsx app-coach.jsx app-mobility.jsx app-main.jsx canvas.jsx; do
   echo "  <script type=\"text/babel\">" >> index.html
   cat "$f" >> index.html
   echo -e "\n  </script>" >> index.html

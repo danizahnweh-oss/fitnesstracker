@@ -7,6 +7,47 @@
 // current set.
 
 // ─────────────────────────────────────────────────────────────
+// CUES BLOCK — aufklappbare Technik-Hinweise (Setup, Cues, Fehler)
+// ─────────────────────────────────────────────────────────────
+function CuesBlock({ theme, cues, open, onToggle }) {
+  if (!cues) return null;
+  return (
+    <div style={{
+      marginTop: 12, borderRadius: theme.radius,
+      border: `1px solid ${open ? theme.borderStrong : theme.border}`,
+      overflow: 'hidden', background: theme.surface2,
+    }}>
+      <button onClick={onToggle} style={{
+        width: '100%', padding: '12px 14px',
+        background: 'transparent', border: 'none', color: theme.text,
+        fontFamily: 'inherit', fontSize: 13, fontWeight: 700,
+        cursor: 'pointer', textAlign: 'left',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <span>Technik & Fehler</span>
+        <span style={{ color: theme.muted, fontSize: 18, lineHeight: 1 }}>{open ? '−' : '+'}</span>
+      </button>
+      {open && (
+        <div style={{ padding: '0 14px 14px', borderTop: `1px solid ${theme.border}`, paddingTop: 12 }}>
+          <Label theme={theme} style={{ marginBottom: 6 }}>Setup</Label>
+          <div style={{ fontSize: 13, color: theme.mutedStrong, lineHeight: 1.6, marginBottom: 12 }}>
+            {cues.setup}
+          </div>
+          <Label theme={theme} style={{ marginBottom: 6 }}>Cues</Label>
+          <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: theme.mutedStrong, lineHeight: 1.7, marginBottom: 12 }}>
+            {cues.cues.map((c, i) => <li key={i}>{c}</li>)}
+          </ul>
+          <Label theme={theme} style={{ marginBottom: 6, color: theme.danger }}>Häufige Fehler</Label>
+          <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: theme.mutedStrong, lineHeight: 1.7 }}>
+            {cues.mistakes.map((m, i) => <li key={i}>{m}</li>)}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
 // EXERCISE CARD — collapsed list, active = expanded ready-state
 // ─────────────────────────────────────────────────────────────
 function ExerciseCard({ theme, state, ex, live, active, done, warmupStyle, onTap, onStartSet, onAdjustWeight, onOpenPlates, onReplace }) {
@@ -16,6 +57,9 @@ function ExerciseCard({ theme, state, ex, live, active, done, warmupStyle, onTap
 
   const isStuck = last && FT.detectStall(state, FT.SESSION_DOW[1], ex.id);
   const currentSetIdx = live.sets.findIndex(s => !s.done);
+
+  const [showCues, setShowCues] = React.useState(false);
+  const cues = FT.getCues(ex.id); // null bei Custom-/ersetzten Übungen
 
   return (
     <div style={{
@@ -149,6 +193,25 @@ function ExerciseCard({ theme, state, ex, live, active, done, warmupStyle, onTap
               </span>
             </div>
           )}
+
+          {/* Technik-Hinweise (aufklappbar) */}
+          <CuesBlock theme={theme} cues={cues} open={showCues} onToggle={() => setShowCues(v => !v)} />
+        </div>
+      )}
+
+      {/* Erledigte Übung — Performance dieser Session nachschauen */}
+      {active && done && (
+        <div style={{ borderTop: `1px solid ${theme.border}`, padding: '14px 16px' }}>
+          <Label theme={theme} style={{ marginBottom: 6 }}>Diese Session · {FT.fmtWeight(live.weight)}kg</Label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {live.sets.map((s, i) => (
+              <SetRow key={i} theme={theme} idx={i} set={s} targetReps={ex.reps}
+                isCurrent={false} rpeMode={state.settings.rpeMode} onStart={() => {}} />
+            ))}
+          </div>
+
+          {/* Technik-Hinweise (aufklappbar) */}
+          <CuesBlock theme={theme} cues={cues} open={showCues} onToggle={() => setShowCues(v => !v)} />
         </div>
       )}
     </div>

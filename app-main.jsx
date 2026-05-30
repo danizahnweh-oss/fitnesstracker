@@ -5,7 +5,7 @@ const { useState: useStateM, useEffect: useEffectM } = React;
 
 function App({ theme }) {
   const [state, setState] = useAppState(theme);
-  const [screen, setScreen] = useStateM('home'); // home | preCheck | workout | stats | settings | coach
+  const [screen, setScreen] = useStateM('home'); // home | preCheck | workout | stats | settings | coach | mobility
   const [plateModal, setPlateModal] = useStateM(null);
   const [celebrationPRs, setCelebrationPRs] = useStateM(null);
   const [pendingRecovery, setPendingRecovery] = useStateM(null);
@@ -34,6 +34,7 @@ function App({ theme }) {
           onOpenStats={() => setScreen('stats')}
           onOpenSettings={() => setScreen('settings')}
           onOpenCoach={() => setScreen('coach')}
+          onOpenMobility={() => setScreen('mobility')}
           onOpenPlates={() => setPlateModal({ target: 60, bar: state.settings.barWeight })}
         />
       )}
@@ -44,6 +45,7 @@ function App({ theme }) {
             onOpenStats={() => {}}
             onOpenSettings={() => {}}
             onOpenCoach={() => {}}
+            onOpenMobility={() => {}}
             onOpenPlates={() => {}}
           />
           <RecoveryCheck theme={theme}
@@ -74,6 +76,10 @@ function App({ theme }) {
       )}
       {screen === 'coach' && (
         <CoachScreen theme={theme} state={state} setState={setState}
+          onClose={() => setScreen('home')} />
+      )}
+      {screen === 'mobility' && (
+        <MobilityScreen theme={theme} state={state} setState={setState}
           onClose={() => setScreen('home')} />
       )}
       {plateModal && (

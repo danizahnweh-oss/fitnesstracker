@@ -194,7 +194,7 @@ function Label({ theme, children, style = {} }) {
 // ─────────────────────────────────────────────────────────────
 // HOME SCREEN
 // ─────────────────────────────────────────────────────────────
-function HomeScreen({ theme, state, setState, onStart, onOpenStats, onOpenSettings, onOpenPlates, onOpenCoach }) {
+function HomeScreen({ theme, state, setState, onStart, onOpenStats, onOpenSettings, onOpenPlates, onOpenCoach, onOpenMobility }) {
   const sessionId = FT.suggestSessionToday(state);
   const session = FT.TRAINING_PLAN[sessionId];
   const lastSession = FT.findLastSession(state, sessionId);
@@ -395,6 +395,21 @@ function HomeScreen({ theme, state, setState, onStart, onOpenStats, onOpenSettin
           <div style={{ fontSize: 11, color: theme.muted, marginTop: 2 }}>
             {lastBW ? `zuletzt ${FT.daysAgo(lastBW.date)}` : 'eintragen'}
           </div>
+        </Card>
+      </div>
+
+      {/* Mobility */}
+      <div style={{ padding: '0 22px 18px' }}>
+        <Card theme={theme} style={{ padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}
+          onClick={onOpenMobility}>
+          <div style={{ minWidth: 0 }}>
+            <Label theme={theme}>Beweglichkeit</Label>
+            <div style={{ marginTop: 6, fontSize: 16, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span>🧘</span> Mobility-Session
+            </div>
+            <div style={{ fontSize: 11, color: theme.muted, marginTop: 2 }}>Hüfte · Schultern · BWS · mehr</div>
+          </div>
+          <span style={{ color: theme.accent, fontSize: 20, flexShrink: 0 }}>→</span>
         </Card>
       </div>
 

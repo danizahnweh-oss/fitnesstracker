@@ -117,6 +117,79 @@ const SESSION_ORDER = ['A', 'B', 'C'];
 const SESSION_DOW = { 1: 'A', 3: 'B', 5: 'C' }; // Mo, Mi, Fr
 
 // ─────────────────────────────────────────────────────────────
+// MOBILITY  (separate routines — Beweglichkeit, getrennt vom Krafttraining)
+// Übung: {id, name, desc} + entweder dur (Sek., getimt) oder reps (Wdh).
+// Links/rechts = zwei Einträge mit _l/_r, je ein Timer-Schritt.
+// ─────────────────────────────────────────────────────────────
+const MOBILITY_ROUTINES = {
+  hips: {
+    id: 'hips',
+    name: 'Hüfte',
+    focus: 'Hüftöffner · Mobilität',
+    est: 8,
+    exercises: [
+      { id: 'hip_90_90', name: '90/90 Hüftwechsel', desc: 'Aufrecht sitzen, langsam Seite wechseln, Brust hoch halten.', dur: 60, side: 'both' },
+      { id: 'couch_l', name: 'Couch-Stretch (links)', desc: 'Hinteres Knie an die Wand, Becken aufrichten, Po anspannen.', dur: 45, side: 'left' },
+      { id: 'couch_r', name: 'Couch-Stretch (rechts)', desc: 'Hinteres Knie an die Wand, Becken aufrichten, Po anspannen.', dur: 45, side: 'right' },
+      { id: 'deep_squat', name: 'Tiefe Hocke halten', desc: 'Fersen am Boden, Ellenbogen drücken die Knie nach außen.', dur: 60, side: 'both' },
+      { id: 'fire_hydrant', name: 'Fire Hydrants', desc: 'Im Vierfüßler, Knie kontrolliert seitlich heben — je Seite.', reps: 10, side: 'both' },
+    ],
+  },
+  shoulders: {
+    id: 'shoulders',
+    name: 'Schultern',
+    focus: 'Schultergürtel · Rotatoren',
+    est: 7,
+    exercises: [
+      { id: 'sh_cars_l', name: 'Schulter-CARs (links)', desc: 'Großer, langsamer Kreis mit dem Arm — volle Kontrolle.', reps: 5, side: 'left' },
+      { id: 'sh_cars_r', name: 'Schulter-CARs (rechts)', desc: 'Großer, langsamer Kreis mit dem Arm — volle Kontrolle.', reps: 5, side: 'right' },
+      { id: 'band_dislocate', name: 'Band Pass-Throughs', desc: 'Band/Stab weit greifen, gestreckte Arme über den Kopf führen.', reps: 12, side: 'both' },
+      { id: 'wall_slides', name: 'Wall Slides', desc: 'Rücken/Arme an der Wand, Arme hoch und runter gleiten.', dur: 45, side: 'both' },
+      { id: 'thread_needle', name: 'Thread the Needle', desc: 'Im Vierfüßler Arm unter dem Körper durchfädeln, Brust öffnen.', dur: 40, side: 'both' },
+    ],
+  },
+  tspine: {
+    id: 'tspine',
+    name: 'Brustwirbelsäule',
+    focus: 'BWS-Rotation · Extension',
+    est: 7,
+    exercises: [
+      { id: 'open_book_l', name: 'Open Book (links)', desc: 'Seitlage, oberen Arm öffnen, Blick folgt der Hand.', reps: 8, side: 'left' },
+      { id: 'open_book_r', name: 'Open Book (rechts)', desc: 'Seitlage, oberen Arm öffnen, Blick folgt der Hand.', reps: 8, side: 'right' },
+      { id: 'cat_cow', name: 'Katze-Kuh', desc: 'Wirbel für Wirbel runden und strecken, ruhig atmen.', dur: 60, side: 'both' },
+      { id: 'tspine_ext', name: 'BWS-Extension (Rolle)', desc: 'Foam Roller unter BWS, kontrolliert nach hinten strecken.', dur: 45, side: 'both' },
+      { id: 'quadruped_rot', name: 'Quadruped Rotation', desc: 'Hand an den Hinterkopf, Ellenbogen zur Decke rotieren.', reps: 8, side: 'both' },
+    ],
+  },
+  ankles: {
+    id: 'ankles',
+    name: 'Sprunggelenke',
+    focus: 'Dorsalflexion · Stabilität',
+    est: 6,
+    exercises: [
+      { id: 'ankle_rock_l', name: 'Knee-to-Wall (links)', desc: 'Knie Richtung Wand schieben, Ferse bleibt am Boden.', dur: 40, side: 'left' },
+      { id: 'ankle_rock_r', name: 'Knee-to-Wall (rechts)', desc: 'Knie Richtung Wand schieben, Ferse bleibt am Boden.', dur: 40, side: 'right' },
+      { id: 'calf_raise', name: 'Wadenheben langsam', desc: 'Hoch auf die Zehen, oben halten, langsam ablassen.', reps: 15, side: 'both' },
+      { id: 'ankle_circles', name: 'Fußkreisen', desc: 'Große, langsame Kreise je Fuß in beide Richtungen.', dur: 40, side: 'both' },
+    ],
+  },
+  fullbody: {
+    id: 'fullbody',
+    name: 'Ganzkörper',
+    focus: 'Kurzes Mobility-Flow',
+    est: 10,
+    exercises: [
+      { id: 'fb_cat_cow', name: 'Katze-Kuh', desc: 'Wirbelsäule aufwärmen, ruhig atmen.', dur: 45, side: 'both' },
+      { id: 'fb_worlds_greatest_l', name: "World's Greatest (links)", desc: 'Ausfallschritt, Ellenbogen zum Boden, dann Rotation öffnen.', dur: 40, side: 'left' },
+      { id: 'fb_worlds_greatest_r', name: "World's Greatest (rechts)", desc: 'Ausfallschritt, Ellenbogen zum Boden, dann Rotation öffnen.', dur: 40, side: 'right' },
+      { id: 'fb_deep_squat', name: 'Tiefe Hocke halten', desc: 'Fersen am Boden, Knie öffnen, aufrecht bleiben.', dur: 60, side: 'both' },
+      { id: 'fb_band_dislocate', name: 'Band Pass-Throughs', desc: 'Schultern mobilisieren, gestreckte Arme.', reps: 12, side: 'both' },
+      { id: 'fb_hip_90_90', name: '90/90 Hüftwechsel', desc: 'Langsam Seite wechseln, Brust hoch.', dur: 60, side: 'both' },
+    ],
+  },
+};
+
+// ─────────────────────────────────────────────────────────────
 // STORAGE  (theme-scoped so the 3 variants don't fight)
 // ─────────────────────────────────────────────────────────────
 function storageKey(theme) {
@@ -139,6 +212,7 @@ function defaultState() {
     sessions: [],   // {date, sessionId, week, exercises, feel, notes, recovery:{sleep,soreness,energy,water}, prs}
     bodyweight: [], // {date, kg}
     water: [],      // {date, glasses}
+    mobility: [],   // {date, routineId, durationSec, completed}
     currentSessionIdx: 0,
     weekNo: 1,
     customExercises: [],   // user-added
@@ -656,12 +730,15 @@ function getSessionExercises(state, sessionId) {
   });
 }
 
+function getMobilityRoutine(id) { return MOBILITY_ROUTINES[id] || null; }
+function listMobilityRoutines() { return Object.values(MOBILITY_ROUTINES); }
+
 // ─────────────────────────────────────────────────────────────
 // EXPORT TO WINDOW
 // ─────────────────────────────────────────────────────────────
 window.FT = {
   TRAINING_PLAN, SESSION_ORDER, SESSION_DOW, PLATE_COLORS,
-  MUSCLE_MAP, FORM_CUES,
+  MUSCLE_MAP, FORM_CUES, MOBILITY_ROUTINES,
   loadState, saveState, defaultState, mergeDefaults,
   suggestNextWeight, findLastSession, findLastForExercise, exerciseHistory,
   estimate1RM, bestEstimate1RM, generateWarmups, generateWarmupsWendler, generateWarmupsBy,
@@ -672,6 +749,7 @@ window.FT = {
   // new
   calcStreak, sessionVolume, volumeByMuscle, detectPRs, detectStall, allTimePRs,
   getCues, getMuscles, getSessionExercises,
+  getMobilityRoutine, listMobilityRoutines,
   requestWakeLock, releaseWakeLock,
   rpeToRir, rirToRpe,
 };
