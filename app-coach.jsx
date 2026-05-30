@@ -27,21 +27,23 @@ function CoachScreen({ theme, state, setState, onClose }) {
       {/* Tabs */}
       <div style={{ padding: '0 22px 14px', display: 'flex', gap: 4 }}>
         {[
-          { id: 'feedback', label: '🤖 Feedback' },
+          { id: 'feedback', label: '🤖 KI' },
+          { id: 'video',    label: '📹 Video' },
           { id: 'cues',     label: '🎯 Form' },
-          { id: 'custom',   label: '➕ Übungen' },
+          { id: 'custom',   label: '➕ Übung' },
         ].map(t => (
           <button key={t.id} onClick={() => setTab(t.id)} style={{
             flex: 1, padding: '10px 0', borderRadius: theme.radius,
             background: tab === t.id ? theme.surface : 'transparent',
             color: tab === t.id ? theme.text : theme.muted,
             border: `1px solid ${tab === t.id ? theme.borderStrong : 'transparent'}`,
-            fontSize: 12, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer',
+            fontSize: 11, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer',
           }}>{t.label}</button>
         ))}
       </div>
 
       {tab === 'feedback' && <FeedbackTab theme={theme} state={state} />}
+      {tab === 'video'    && <VideoTab    theme={theme} state={state} setState={setState} />}
       {tab === 'cues'     && <CuesTab     theme={theme} />}
       {tab === 'custom'   && <CustomTab   theme={theme} state={state} setState={setState} />}
     </div>

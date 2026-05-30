@@ -167,47 +167,273 @@ const SESSION_DOW = { 1: 'A', 3: 'B', 5: 'C' }; // Mo, Mi, Fr
 
 // ─────────────────────────────────────────────────────────────
 // MOBILITY  (separate routines — Beweglichkeit, getrennt vom Krafttraining)
-// Übung: {id, name, desc} + entweder dur (Sek., getimt) oder reps (Wdh).
-// Links/rechts = zwei Einträge mit _l/_r, je ein Timer-Schritt.
+// Übung: {id, name, side, pose, dur|reps, setup, steps[], tip, mistakes[]}
+//   - pose = Schlüssel für die Strichfigur in app-mobility.jsx (MOBILITY_POSES)
+//   - Links/rechts = zwei Einträge mit _l/_r, gleiche pose
 // ─────────────────────────────────────────────────────────────
 const MOBILITY_ROUTINES = {
   hips: {
     id: 'hips',
     name: 'Hüfte',
     focus: 'Hüftöffner · Mobilität',
-    est: 8,
+    est: 9,
     exercises: [
-      { id: 'hip_90_90', name: '90/90 Hüftwechsel', desc: 'Aufrecht sitzen, langsam Seite wechseln, Brust hoch halten.', dur: 60, side: 'both' },
-      { id: 'couch_l', name: 'Couch-Stretch (links)', desc: 'Hinteres Knie an die Wand, Becken aufrichten, Po anspannen.', dur: 45, side: 'left' },
-      { id: 'couch_r', name: 'Couch-Stretch (rechts)', desc: 'Hinteres Knie an die Wand, Becken aufrichten, Po anspannen.', dur: 45, side: 'right' },
-      { id: 'deep_squat', name: 'Tiefe Hocke halten', desc: 'Fersen am Boden, Ellenbogen drücken die Knie nach außen.', dur: 60, side: 'both' },
-      { id: 'fire_hydrant', name: 'Fire Hydrants', desc: 'Im Vierfüßler, Knie kontrolliert seitlich heben — je Seite.', reps: 10, side: 'both' },
+      {
+        id: 'hip_90_90', name: '90/90 Hüftwechsel', side: 'both', pose: 'seated_90_90', dur: 60,
+        setup: 'Aufrecht auf dem Boden sitzen: vorderes Bein 90° vor dir, hinteres Bein 90° zur Seite. Beide Knie und Knöchel berühren möglichst den Boden.',
+        steps: [
+          'Brustbein hoch, Rücken lang — keine Rundung.',
+          'Knie und Hüfte aktiv in Richtung Boden drücken, Sitz fühlen.',
+          '3–4 Sekunden halten, dann durch die Mitte zur anderen Seite kippen.',
+          'Wechsel kontrolliert und langsam, nicht werfen.',
+        ],
+        tip: 'Wenn das vordere Knie nicht runter kommt: Po leicht heben oder die hintere Hand zur Stütze setzen.',
+        mistakes: [
+          'Mit krummem Rücken vornüber kippen',
+          'Hektisch hin- und herwerfen statt kontrolliert wechseln',
+          'Auf das Knie pressen statt aktiv reindrücken',
+        ],
+      },
+      {
+        id: 'couch_l', name: 'Couch-Stretch (links)', side: 'left', pose: 'couch_stretch', dur: 45,
+        setup: 'Im Halbkniestand vor einer Wand / Couch. Linkes Knie am Boden, Schienbein/Fußrücken an die Wand. Rechtes Bein vorn 90°.',
+        steps: [
+          'Becken aktiv nach oben/vorn aufrichten — Po fest anspannen.',
+          'Bauch leicht anspannen, Rippen runter.',
+          'Oberkörper aufrecht halten oder leicht zurück lehnen.',
+          'Tief atmen, im Dehngefühl bleiben, nicht zerren.',
+        ],
+        tip: 'Erst wenn das Becken aufgerichtet ist, beginnt der eigentliche Dehnreiz im Hüftbeuger.',
+        mistakes: [
+          'Hohlkreuz: Becken kippt vor statt aufzurichten',
+          'Knie weh weil zu wenig Polster — Handtuch drunter',
+          'Im Schmerz dehnen statt im Dehngefühl',
+        ],
+      },
+      {
+        id: 'couch_r', name: 'Couch-Stretch (rechts)', side: 'right', pose: 'couch_stretch', dur: 45,
+        setup: 'Im Halbkniestand vor einer Wand / Couch. Rechtes Knie am Boden, Schienbein/Fußrücken an die Wand. Linkes Bein vorn 90°.',
+        steps: [
+          'Becken aktiv nach oben/vorn aufrichten — Po fest anspannen.',
+          'Bauch leicht anspannen, Rippen runter.',
+          'Oberkörper aufrecht halten oder leicht zurück lehnen.',
+          'Tief atmen, im Dehngefühl bleiben, nicht zerren.',
+        ],
+        tip: 'Erst wenn das Becken aufgerichtet ist, beginnt der eigentliche Dehnreiz im Hüftbeuger.',
+        mistakes: [
+          'Hohlkreuz: Becken kippt vor statt aufzurichten',
+          'Knie weh weil zu wenig Polster — Handtuch drunter',
+          'Im Schmerz dehnen statt im Dehngefühl',
+        ],
+      },
+      {
+        id: 'deep_squat', name: 'Tiefe Hocke halten', side: 'both', pose: 'deep_squat', dur: 60,
+        setup: 'Füße schulterbreit, Zehen leicht nach außen. Tief in die Hocke setzen — Po geht Richtung Fersen.',
+        steps: [
+          'Fersen bleiben am Boden — wenn nicht, Stand etwas breiter machen.',
+          'Brust hoch, Blick nach vorn, langer Rücken.',
+          'Ellenbogen zwischen die Knie und sanft nach außen drücken.',
+          'Locker atmen, in die Position hinein entspannen.',
+        ],
+        tip: 'Fersen heben sich? Eine zusammengerollte Matte oder Buchkante unter die Fersen.',
+        mistakes: [
+          'Rücken rundet stark ein',
+          'Knie kippen nach innen',
+          'Fersen heben sich heimlich',
+        ],
+      },
+      {
+        id: 'fire_hydrant', name: 'Fire Hydrants', side: 'both', pose: 'quadruped', reps: 10,
+        setup: 'Im Vierfüßler: Hände unter Schultern, Knie unter Hüfte. Rücken neutral, Bauch leicht angespannt.',
+        steps: [
+          'Ein Knie kontrolliert seitlich nach oben heben — Winkel im Knie bleibt bei 90°.',
+          'Becken bleibt parallel zum Boden — nicht mitkippen.',
+          'Oben kurz halten, dann langsam zurück.',
+          '10 Wdh pro Seite, dann wechseln.',
+        ],
+        tip: 'Hand auf die Hüfte legen kann helfen zu spüren, ob das Becken stabil bleibt.',
+        mistakes: [
+          'Becken kippt zur Seite weg',
+          'Mit Schwung statt aus dem Po',
+          'Bein zu hoch — Qualität vor Höhe',
+        ],
+      },
     ],
   },
   shoulders: {
     id: 'shoulders',
     name: 'Schultern',
     focus: 'Schultergürtel · Rotatoren',
-    est: 7,
+    est: 8,
     exercises: [
-      { id: 'sh_cars_l', name: 'Schulter-CARs (links)', desc: 'Großer, langsamer Kreis mit dem Arm — volle Kontrolle.', reps: 5, side: 'left' },
-      { id: 'sh_cars_r', name: 'Schulter-CARs (rechts)', desc: 'Großer, langsamer Kreis mit dem Arm — volle Kontrolle.', reps: 5, side: 'right' },
-      { id: 'band_dislocate', name: 'Band Pass-Throughs', desc: 'Band/Stab weit greifen, gestreckte Arme über den Kopf führen.', reps: 12, side: 'both' },
-      { id: 'wall_slides', name: 'Wall Slides', desc: 'Rücken/Arme an der Wand, Arme hoch und runter gleiten.', dur: 45, side: 'both' },
-      { id: 'thread_needle', name: 'Thread the Needle', desc: 'Im Vierfüßler Arm unter dem Körper durchfädeln, Brust öffnen.', dur: 40, side: 'both' },
+      {
+        id: 'sh_cars_l', name: 'Schulter-CARs (links)', side: 'left', pose: 'shoulder_cars', reps: 5,
+        setup: 'Aufrecht stehen, Füße hüftbreit. Rechte Hand fasst die linke Schulter zur Stabilisierung.',
+        steps: [
+          'Linken Arm gestreckt nach vorn und langsam einen großen Kreis zeichnen.',
+          'So langsam wie möglich — 5 Sekunden pro Kreis, voller Bewegungsumfang.',
+          'Rest des Körpers bleibt still — nur die Schulter arbeitet.',
+          '5 Kreise vorwärts, dann 5 rückwärts.',
+        ],
+        tip: 'CARs = Controlled Articular Rotations. Je langsamer, desto mehr Kontrolle und Reiz.',
+        mistakes: [
+          'Schultern mitziehen / Oberkörper drehen',
+          'Zu schnell — Schwung statt Kontrolle',
+          'Halber Kreis statt voller Bewegungsumfang',
+        ],
+      },
+      {
+        id: 'sh_cars_r', name: 'Schulter-CARs (rechts)', side: 'right', pose: 'shoulder_cars', reps: 5,
+        setup: 'Aufrecht stehen, Füße hüftbreit. Linke Hand fasst die rechte Schulter zur Stabilisierung.',
+        steps: [
+          'Rechten Arm gestreckt nach vorn und langsam einen großen Kreis zeichnen.',
+          'So langsam wie möglich — 5 Sekunden pro Kreis, voller Bewegungsumfang.',
+          'Rest des Körpers bleibt still — nur die Schulter arbeitet.',
+          '5 Kreise vorwärts, dann 5 rückwärts.',
+        ],
+        tip: 'CARs = Controlled Articular Rotations. Je langsamer, desto mehr Kontrolle und Reiz.',
+        mistakes: [
+          'Schultern mitziehen / Oberkörper drehen',
+          'Zu schnell — Schwung statt Kontrolle',
+          'Halber Kreis statt voller Bewegungsumfang',
+        ],
+      },
+      {
+        id: 'band_dislocate', name: 'Band Pass-Throughs', side: 'both', pose: 'band_overhead', reps: 12,
+        setup: 'Theraband oder Besenstil sehr weit greifen — breiter als Schulterbreite. Aufrecht stehen.',
+        steps: [
+          'Mit gestreckten Armen das Band/den Stab nach vorn halten.',
+          'Langsam über den Kopf nach hinten führen, ohne Arme zu beugen.',
+          'Hinten unten halten, dann den Weg zurück.',
+          'Arme die ganze Zeit gestreckt, Schultern entspannt.',
+        ],
+        tip: 'Wenn es nicht durchgeht: Hände weiter auseinander. Mit der Zeit kannst du enger greifen.',
+        mistakes: [
+          'Arme beugen sich, um Mobilität vorzutäuschen',
+          'Hohlkreuz beim Überkopfführen',
+          'Ruckartig statt fließend',
+        ],
+      },
+      {
+        id: 'wall_slides', name: 'Wall Slides', side: 'both', pose: 'wall_slides', dur: 45,
+        setup: 'Rücken, Po, Kopf an einer Wand. Ellenbogen 90°, Handrücken berühren ebenfalls die Wand.',
+        steps: [
+          'Arme langsam an der Wand nach oben gleiten lassen — Kontakt halten.',
+          'Soweit hoch, wie Handrücken UND unterer Rücken an der Wand bleiben.',
+          'Dann kontrolliert zurück, Schulterblätter nach unten ziehen.',
+          'Gleichmäßiges Tempo, ruhig atmen.',
+        ],
+        tip: 'Wenn Handrücken sich lösen, bist du am Limit — nicht erzwingen, mit der Zeit wird\'s besser.',
+        mistakes: [
+          'Hohlkreuz machen, um die Arme hochzukriegen',
+          'Hände lösen sich von der Wand',
+          'Schultern hochziehen statt unten lassen',
+        ],
+      },
+      {
+        id: 'thread_needle', name: 'Thread the Needle', side: 'both', pose: 'quadruped', dur: 40,
+        setup: 'Im Vierfüßler starten. Hände unter Schultern, Knie unter Hüfte.',
+        steps: [
+          'Rechten Arm gestreckt unter dem Körper hindurch nach links führen.',
+          'Schulter und Wange sinken Richtung Boden.',
+          '20 Sekunden im Dehngefühl bleiben, dann Seite wechseln.',
+          'Ruhig atmen, Brust öffnen.',
+        ],
+        tip: 'Den linken Arm nach oben zur Decke strecken intensiviert die BWS-Rotation.',
+        mistakes: [
+          'Hüfte mitkippen statt stabil halten',
+          'In den Schmerz gehen',
+          'Zu schnelle Bewegung',
+        ],
+      },
     ],
   },
   tspine: {
     id: 'tspine',
     name: 'Brustwirbelsäule',
     focus: 'BWS-Rotation · Extension',
-    est: 7,
+    est: 8,
     exercises: [
-      { id: 'open_book_l', name: 'Open Book (links)', desc: 'Seitlage, oberen Arm öffnen, Blick folgt der Hand.', reps: 8, side: 'left' },
-      { id: 'open_book_r', name: 'Open Book (rechts)', desc: 'Seitlage, oberen Arm öffnen, Blick folgt der Hand.', reps: 8, side: 'right' },
-      { id: 'cat_cow', name: 'Katze-Kuh', desc: 'Wirbel für Wirbel runden und strecken, ruhig atmen.', dur: 60, side: 'both' },
-      { id: 'tspine_ext', name: 'BWS-Extension (Rolle)', desc: 'Foam Roller unter BWS, kontrolliert nach hinten strecken.', dur: 45, side: 'both' },
-      { id: 'quadruped_rot', name: 'Quadruped Rotation', desc: 'Hand an den Hinterkopf, Ellenbogen zur Decke rotieren.', reps: 8, side: 'both' },
+      {
+        id: 'open_book_l', name: 'Open Book (links)', side: 'left', pose: 'side_lying', reps: 8,
+        setup: 'Rechte Seitlage. Knie 90° gebeugt aufeinander, beide Arme nach vorn ausgestreckt auf Schulterhöhe.',
+        steps: [
+          'Linken Arm wie ein Buchdeckel öffnen — Richtung Boden hinter dir.',
+          'Blick folgt der Hand, Brust öffnet sich.',
+          'Knie bleiben unten und zusammen — Hüfte wird NICHT mitgedreht.',
+          'Kurz halten, dann kontrolliert zurück.',
+        ],
+        tip: 'Wenn der Arm den Boden nicht berührt: kein Problem, Bewegungsumfang wird mit der Zeit größer.',
+        mistakes: [
+          'Hüfte/Knie kippen mit auf — Rotation kommt dann aus der LWS',
+          'Schulter hochgezogen',
+          'Atem anhalten',
+        ],
+      },
+      {
+        id: 'open_book_r', name: 'Open Book (rechts)', side: 'right', pose: 'side_lying', reps: 8,
+        setup: 'Linke Seitlage. Knie 90° gebeugt aufeinander, beide Arme nach vorn ausgestreckt auf Schulterhöhe.',
+        steps: [
+          'Rechten Arm wie ein Buchdeckel öffnen — Richtung Boden hinter dir.',
+          'Blick folgt der Hand, Brust öffnet sich.',
+          'Knie bleiben unten und zusammen — Hüfte wird NICHT mitgedreht.',
+          'Kurz halten, dann kontrolliert zurück.',
+        ],
+        tip: 'Wenn der Arm den Boden nicht berührt: kein Problem, Bewegungsumfang wird mit der Zeit größer.',
+        mistakes: [
+          'Hüfte/Knie kippen mit auf — Rotation kommt dann aus der LWS',
+          'Schulter hochgezogen',
+          'Atem anhalten',
+        ],
+      },
+      {
+        id: 'cat_cow', name: 'Katze-Kuh', side: 'both', pose: 'quadruped', dur: 60,
+        setup: 'Vierfüßler — Hände unter Schultern, Knie unter Hüfte. Wirbelsäule neutral.',
+        steps: [
+          'EINATMEN: Brust raus, Steißbein hoch, Bauch fällt Richtung Boden (Kuh).',
+          'AUSATMEN: Wirbel für Wirbel einrollen, Rücken hoch, Kinn zur Brust (Katze).',
+          'Bewegung kommt aus der ganzen Wirbelsäule — nicht nur LWS.',
+          'Langsam mit dem Atem, etwa 3-4 Sekunden pro Phase.',
+        ],
+        tip: 'Stell dir vor, jeder Wirbel bewegt sich einzeln — von Becken bis Hals.',
+        mistakes: [
+          'Nur die LWS bewegt sich',
+          'Arme/Beine kollabieren',
+          'Mit dem Atem nicht synchron',
+        ],
+      },
+      {
+        id: 'tspine_ext', name: 'BWS-Extension (Rolle)', side: 'both', pose: 'tspine_roller', dur: 45,
+        setup: 'Foam Roller quer unter der oberen Brustwirbelsäule. Hände hinterm Kopf, Ellenbogen vor dem Gesicht, Füße aufgestellt.',
+        steps: [
+          'Po bleibt am Boden, Bauch leicht aktiv.',
+          'Brust langsam nach hinten/unten öffnen — Kopf folgt entspannt.',
+          'Pro Position 3-5 Atemzüge halten.',
+          'Roller etwas verschieben (jeweils ~2 cm) und nächste Position.',
+        ],
+        tip: 'Nur die BWS soll sich strecken, NICHT die LWS — deshalb Po unten lassen.',
+        mistakes: [
+          'In die LWS strecken (Po hebt sich)',
+          'Roller zu tief — gehört oberhalb der unteren Rippen',
+          'Hände in den Nacken zerren',
+        ],
+      },
+      {
+        id: 'quadruped_rot', name: 'Quadruped Rotation', side: 'both', pose: 'quadruped', reps: 8,
+        setup: 'Vierfüßler. Rechte Hand an den Hinterkopf, Ellenbogen zeigt nach unten.',
+        steps: [
+          'Rechten Ellenbogen langsam zur Decke öffnen — Rotation aus der BWS.',
+          'Brust folgt der Bewegung, Hüfte bleibt stabil.',
+          'Blick begleitet den Ellenbogen.',
+          'Kontrolliert zurück. 8 Wdh, dann Seite wechseln.',
+        ],
+        tip: 'Hand am Hinterkopf hilft, dass die Rotation aus der Brustwirbelsäule kommt — nicht aus dem Hals.',
+        mistakes: [
+          'Becken kippt mit',
+          'Nur der Kopf dreht statt der gesamte Oberkörper',
+          'Standhand kollabiert',
+        ],
+      },
     ],
   },
   ankles: {
@@ -216,24 +442,167 @@ const MOBILITY_ROUTINES = {
     focus: 'Dorsalflexion · Stabilität',
     est: 6,
     exercises: [
-      { id: 'ankle_rock_l', name: 'Knee-to-Wall (links)', desc: 'Knie Richtung Wand schieben, Ferse bleibt am Boden.', dur: 40, side: 'left' },
-      { id: 'ankle_rock_r', name: 'Knee-to-Wall (rechts)', desc: 'Knie Richtung Wand schieben, Ferse bleibt am Boden.', dur: 40, side: 'right' },
-      { id: 'calf_raise', name: 'Wadenheben langsam', desc: 'Hoch auf die Zehen, oben halten, langsam ablassen.', reps: 15, side: 'both' },
-      { id: 'ankle_circles', name: 'Fußkreisen', desc: 'Große, langsame Kreise je Fuß in beide Richtungen.', dur: 40, side: 'both' },
+      {
+        id: 'ankle_rock_l', name: 'Knee-to-Wall (links)', side: 'left', pose: 'knee_to_wall', dur: 40,
+        setup: 'Im Halbkniestand vor einer Wand. Linker Fuß vorn, Zehen ~10 cm von der Wand entfernt. Ferse fest am Boden.',
+        steps: [
+          'Linkes Knie Richtung Wand schieben.',
+          'Ferse bleibt zu 100% am Boden — wenn sie sich hebt, Fuß näher ran.',
+          'Knie berührt die Wand idealerweise rechts und links neben dem Knöchel.',
+          '20–30 Wiederholungen leicht wippend.',
+        ],
+        tip: 'Mit der Zeit Fuß weiter weg von der Wand stellen, um mehr Dorsalflexion zu fordern.',
+        mistakes: [
+          'Ferse hebt sich heimlich',
+          'Knie kippt nach innen statt geradeaus',
+          'Hüfte bricht zur Seite weg',
+        ],
+      },
+      {
+        id: 'ankle_rock_r', name: 'Knee-to-Wall (rechts)', side: 'right', pose: 'knee_to_wall', dur: 40,
+        setup: 'Im Halbkniestand vor einer Wand. Rechter Fuß vorn, Zehen ~10 cm von der Wand entfernt. Ferse fest am Boden.',
+        steps: [
+          'Rechtes Knie Richtung Wand schieben.',
+          'Ferse bleibt zu 100% am Boden — wenn sie sich hebt, Fuß näher ran.',
+          'Knie berührt die Wand idealerweise rechts und links neben dem Knöchel.',
+          '20–30 Wiederholungen leicht wippend.',
+        ],
+        tip: 'Mit der Zeit Fuß weiter weg von der Wand stellen, um mehr Dorsalflexion zu fordern.',
+        mistakes: [
+          'Ferse hebt sich heimlich',
+          'Knie kippt nach innen statt geradeaus',
+          'Hüfte bricht zur Seite weg',
+        ],
+      },
+      {
+        id: 'calf_raise', name: 'Wadenheben langsam', side: 'both', pose: 'calf_raise', reps: 15,
+        setup: 'Aufrecht stehen, Füße hüftbreit. Optional an einer Stufe für mehr Bewegungsumfang.',
+        steps: [
+          '3 Sekunden langsam hoch auf die Zehenspitzen.',
+          '1 Sekunde oben halten — hoch wie möglich.',
+          '3 Sekunden langsam ablassen — voller Bewegungsumfang.',
+          'Gleichmäßiges Tempo, ohne Schwung.',
+        ],
+        tip: 'Wenn auf einer Stufe: Ferse darf unten unter Stufenniveau gehen — voller Range.',
+        mistakes: [
+          'Schwung statt Kontrolle',
+          'Halber Range — kaum hoch, kaum runter',
+          'Knie beugen sich',
+        ],
+      },
+      {
+        id: 'ankle_circles', name: 'Fußkreisen', side: 'both', pose: 'ankle_circle', dur: 40,
+        setup: 'Sitzend oder stehend, ein Bein leicht angehoben.',
+        steps: [
+          'Langsame, große Kreise mit dem Fuß zeichnen.',
+          'Voller Bewegungsumfang — Zehen so weit wie möglich rotieren.',
+          '10 Kreise pro Richtung, dann Seite wechseln.',
+          'Rest des Beins bleibt still — nur der Fuß bewegt sich.',
+        ],
+        tip: 'Stell dir vor, du malst mit der großen Zehe ein riesiges Kreissymbol an die Wand.',
+        mistakes: [
+          'Mini-Kreise statt voller Bewegungsumfang',
+          'Ganzes Bein dreht mit',
+          'Zu schnell',
+        ],
+      },
     ],
   },
   fullbody: {
     id: 'fullbody',
     name: 'Ganzkörper',
-    focus: 'Kurzes Mobility-Flow',
-    est: 10,
+    focus: 'Mobility-Flow · 6 Übungen',
+    est: 11,
     exercises: [
-      { id: 'fb_cat_cow', name: 'Katze-Kuh', desc: 'Wirbelsäule aufwärmen, ruhig atmen.', dur: 45, side: 'both' },
-      { id: 'fb_worlds_greatest_l', name: "World's Greatest (links)", desc: 'Ausfallschritt, Ellenbogen zum Boden, dann Rotation öffnen.', dur: 40, side: 'left' },
-      { id: 'fb_worlds_greatest_r', name: "World's Greatest (rechts)", desc: 'Ausfallschritt, Ellenbogen zum Boden, dann Rotation öffnen.', dur: 40, side: 'right' },
-      { id: 'fb_deep_squat', name: 'Tiefe Hocke halten', desc: 'Fersen am Boden, Knie öffnen, aufrecht bleiben.', dur: 60, side: 'both' },
-      { id: 'fb_band_dislocate', name: 'Band Pass-Throughs', desc: 'Schultern mobilisieren, gestreckte Arme.', reps: 12, side: 'both' },
-      { id: 'fb_hip_90_90', name: '90/90 Hüftwechsel', desc: 'Langsam Seite wechseln, Brust hoch.', dur: 60, side: 'both' },
+      {
+        id: 'fb_cat_cow', name: 'Katze-Kuh', side: 'both', pose: 'quadruped', dur: 45,
+        setup: 'Vierfüßler — Hände unter Schultern, Knie unter Hüfte.',
+        steps: [
+          'EINATMEN: Brust raus, Steißbein hoch (Kuh).',
+          'AUSATMEN: Wirbel für Wirbel einrollen (Katze).',
+          'Wirbelsäule warm-bewegen vom Becken bis zum Hals.',
+          'Synchron mit dem Atem.',
+        ],
+        tip: 'Locker beginnen, der Bewegungsumfang wird mit jedem Atemzug größer.',
+        mistakes: [
+          'Nur die LWS bewegt sich',
+          'Schultern hochgezogen',
+        ],
+      },
+      {
+        id: 'fb_worlds_greatest_l', name: "World's Greatest Stretch (links)", side: 'left', pose: 'worlds_greatest', dur: 40,
+        setup: 'Tiefer Ausfallschritt mit dem linken Fuß vorn. Hände links und rechts vom linken Fuß auf dem Boden.',
+        steps: [
+          'Rechten (hinteres Bein) Knie aufgestellt oder am Boden.',
+          'Linken Ellenbogen Richtung linken Fuß senken — Hüfte sinkt mit.',
+          'Dann linken Arm zur Decke öffnen, Brust dreht auf — Blick folgt.',
+          'Halten und atmen.',
+        ],
+        tip: 'Klassischer Warm-up "Best of" — eine Übung für Hüfte + BWS + Schulter gleichzeitig.',
+        mistakes: [
+          'Vorderes Knie kippt nach innen',
+          'Rotation kommt aus der LWS',
+          'Hektisch durchziehen',
+        ],
+      },
+      {
+        id: 'fb_worlds_greatest_r', name: "World's Greatest Stretch (rechts)", side: 'right', pose: 'worlds_greatest', dur: 40,
+        setup: 'Tiefer Ausfallschritt mit dem rechten Fuß vorn. Hände links und rechts vom rechten Fuß auf dem Boden.',
+        steps: [
+          'Linken (hinteres Bein) Knie aufgestellt oder am Boden.',
+          'Rechten Ellenbogen Richtung rechten Fuß senken — Hüfte sinkt mit.',
+          'Dann rechten Arm zur Decke öffnen, Brust dreht auf — Blick folgt.',
+          'Halten und atmen.',
+        ],
+        tip: 'Klassischer Warm-up "Best of" — eine Übung für Hüfte + BWS + Schulter gleichzeitig.',
+        mistakes: [
+          'Vorderes Knie kippt nach innen',
+          'Rotation kommt aus der LWS',
+          'Hektisch durchziehen',
+        ],
+      },
+      {
+        id: 'fb_deep_squat', name: 'Tiefe Hocke halten', side: 'both', pose: 'deep_squat', dur: 60,
+        setup: 'Füße schulterbreit, Zehen leicht raus. Tief in die Hocke.',
+        steps: [
+          'Fersen am Boden, Brust hoch.',
+          'Ellenbogen zwischen die Knie, sanft nach außen drücken.',
+          'In der Position locker atmen.',
+        ],
+        tip: 'Hier setzt sich die Hüfte aus der vorherigen Übung — Position ankommen lassen.',
+        mistakes: [
+          'Rücken rundet ein',
+          'Fersen heben sich',
+        ],
+      },
+      {
+        id: 'fb_band_dislocate', name: 'Band Pass-Throughs', side: 'both', pose: 'band_overhead', reps: 12,
+        setup: 'Band oder Stab weit greifen, aufrecht stehen.',
+        steps: [
+          'Gestreckte Arme von vorn über den Kopf nach hinten führen.',
+          'Dann zurück, gleichmäßig und fließend.',
+          'Arme bleiben gestreckt.',
+        ],
+        tip: 'Schließt die Schultern an den Mobility-Flow an.',
+        mistakes: [
+          'Arme beugen sich',
+          'Hohlkreuz beim Überkopfführen',
+        ],
+      },
+      {
+        id: 'fb_hip_90_90', name: '90/90 Hüftwechsel', side: 'both', pose: 'seated_90_90', dur: 60,
+        setup: 'Auf dem Boden sitzen, beide Beine 90/90.',
+        steps: [
+          'Kontrolliert zur anderen Seite wechseln.',
+          'Brust hoch, langer Rücken.',
+          'Pro Seite 3–4 Sekunden halten.',
+        ],
+        tip: 'Abschluss-Übung — bringt die Hüfte gemütlich zur Ruhe.',
+        mistakes: [
+          'Runder Rücken',
+          'Hektisches Werfen',
+        ],
+      },
     ],
   },
 };
@@ -266,6 +635,7 @@ function defaultState() {
     weekNo: 1,
     customExercises: [],   // user-added
     replacements: {},      // {[sessionId-exId]: customExId}  -- swaps
+    videoAnalyses: {},     // {[exerciseId]: { keyframes, summary, generatedAt }}
     settings: {
       soundEnabled: true,
       soundKind: 'bell',         // bell | ding | beep | silent
@@ -573,6 +943,73 @@ function getCues(exId) { return FORM_CUES[exId] || null; }
 function getMuscles(exId) { return MUSCLE_MAP[exId] || []; }
 
 // ─────────────────────────────────────────────────────────────
+// FORM ANGLES — soll-bereiche pro übung & phase
+// Werte sind grobe biomechanische Richtwerte, verfeinerbar.
+// ─────────────────────────────────────────────────────────────
+const FORM_ANGLES = {
+  squat: {
+    label: 'Kniebeuge',
+    phases: {
+      bottom: {
+        label: 'Tiefster Punkt',
+        targets: {
+          knee:    { range: [70, 110], label: 'Kniewinkel',  tip: 'Hüfte unter Knie für volle Tiefe' },
+          hip:     { range: [40, 90],  label: 'Hüftwinkel',  tip: 'Hüfte tief beugen' },
+          backLean:{ range: [25, 55],  label: 'Rumpf-Neigung', tip: 'Brust hoch, nicht zu weit nach vorne kippen' },
+        },
+      },
+      lockout: {
+        label: 'Lockout (oben)',
+        targets: {
+          knee: { range: [160, 185], label: 'Kniewinkel', tip: 'Voll durchstrecken' },
+          hip:  { range: [160, 185], label: 'Hüftwinkel', tip: 'Glutes anspannen' },
+        },
+      },
+    },
+  },
+  bench: {
+    label: 'Bankdrücken',
+    phases: {
+      bottom: {
+        label: 'Stange an Brust',
+        targets: {
+          elbow:    { range: [55, 95],  label: 'Ellenbogenwinkel', tip: 'Ellenbogen ~45° zum Körper, nicht ganz ausstellen' },
+          shoulder: { range: [40, 80],  label: 'Schulterwinkel',   tip: 'Latissimus aktiv, Schulter nicht nach vorne rollen' },
+        },
+      },
+      lockout: {
+        label: 'Lockout (oben)',
+        targets: {
+          elbow: { range: [160, 185], label: 'Ellenbogenwinkel', tip: 'Voller Lockout über Schulter' },
+        },
+      },
+    },
+  },
+  deadlift: {
+    label: 'Kreuzheben',
+    phases: {
+      start: {
+        label: 'Startposition',
+        targets: {
+          hip:      { range: [40, 95],  label: 'Hüftwinkel',  tip: 'Hüfte höher als Knie, Schultern leicht vor Stange' },
+          knee:     { range: [100, 145], label: 'Kniewinkel', tip: 'Knie nicht zu tief beugen' },
+          backLean: { range: [25, 60],  label: 'Rumpf-Neigung', tip: 'Neutrales Rücken-Setup, kein Rundrücken' },
+        },
+      },
+      lockout: {
+        label: 'Lockout',
+        targets: {
+          hip:      { range: [160, 185], label: 'Hüftwinkel',  tip: 'Hüfte voll durchstrecken' },
+          knee:     { range: [160, 185], label: 'Kniewinkel',  tip: 'Knie voll strecken' },
+          backLean: { range: [-10, 15],  label: 'Rumpf-Neigung', tip: 'Aufrechter Stand, keine Hyperextension' },
+        },
+      },
+    },
+  },
+};
+function getFormAngles(exId) { return FORM_ANGLES[exId] || null; }
+
+// ─────────────────────────────────────────────────────────────
 // STREAK + STATS HELPERS
 // ─────────────────────────────────────────────────────────────
 function calcStreak(state) {
@@ -783,11 +1220,345 @@ function getMobilityRoutine(id) { return MOBILITY_ROUTINES[id] || null; }
 function listMobilityRoutines() { return Object.values(MOBILITY_ROUTINES); }
 
 // ─────────────────────────────────────────────────────────────
+// POSE ANALYZER — MediaPipe-basierte Video-Analyse (Browser-only)
+// ─────────────────────────────────────────────────────────────
+const POSE_SAMPLE_MS = 250;        // Sampling-Abstand zwischen Frames
+const POSE_MAX_DURATION = 60;      // max. Videolänge in Sekunden
+const POSE_SCREENSHOT_HEIGHT = 360; // Höhe für Key-Screenshots
+const POSE_MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task';
+const POSE_VISION_CDN = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs';
+const POSE_WASM_BASE = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm';
+
+// MediaPipe Landmark-Indizes (Subset)
+const LM = {
+  LEFT_SHOULDER: 11, RIGHT_SHOULDER: 12,
+  LEFT_ELBOW: 13,    RIGHT_ELBOW: 14,
+  LEFT_WRIST: 15,    RIGHT_WRIST: 16,
+  LEFT_HIP: 23,      RIGHT_HIP: 24,
+  LEFT_KNEE: 25,     RIGHT_KNEE: 26,
+  LEFT_ANKLE: 27,    RIGHT_ANKLE: 28,
+};
+
+let _poseLandmarkerPromise = null;
+
+async function loadPoseLandmarker(onProgress) {
+  if (_poseLandmarkerPromise) return _poseLandmarkerPromise;
+  _poseLandmarkerPromise = (async () => {
+    onProgress?.('📦 Lade Pose-Modell (~3 MB) …');
+    const vision = await import(/* @vite-ignore */ POSE_VISION_CDN);
+    const fileset = await vision.FilesetResolver.forVisionTasks(POSE_WASM_BASE);
+    const landmarker = await vision.PoseLandmarker.createFromOptions(fileset, {
+      baseOptions: { modelAssetPath: POSE_MODEL_URL, delegate: 'GPU' },
+      runningMode: 'VIDEO',
+      numPoses: 1,
+      minPoseDetectionConfidence: 0.5,
+      minPosePresenceConfidence: 0.5,
+      minTrackingConfidence: 0.5,
+    });
+    return landmarker;
+  })().catch(err => { _poseLandmarkerPromise = null; throw err; });
+  return _poseLandmarkerPromise;
+}
+
+function avgPoint(a, b) {
+  if (!a || !b) return null;
+  return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, z: ((a.z || 0) + (b.z || 0)) / 2, v: Math.min(a.visibility ?? 1, b.visibility ?? 1) };
+}
+
+function angleBetween(a, b, c) {
+  if (!a || !b || !c) return null;
+  const ux = a.x - b.x, uy = a.y - b.y;
+  const vx = c.x - b.x, vy = c.y - b.y;
+  const dot = ux * vx + uy * vy;
+  const mag = Math.sqrt(ux * ux + uy * uy) * Math.sqrt(vx * vx + vy * vy);
+  if (mag < 1e-6) return null;
+  const cos = Math.max(-1, Math.min(1, dot / mag));
+  return Math.acos(cos) * 180 / Math.PI;
+}
+
+function trunkLeanFromVertical(shoulder, hip) {
+  if (!shoulder || !hip) return null;
+  const dx = shoulder.x - hip.x;
+  const dy = shoulder.y - hip.y;
+  const angRad = Math.atan2(Math.abs(dx), Math.abs(dy));
+  return angRad * 180 / Math.PI;
+}
+
+function computeFrameAngles(landmarks) {
+  if (!landmarks || landmarks.length < 29) return null;
+  const ls = landmarks[LM.LEFT_SHOULDER], rs = landmarks[LM.RIGHT_SHOULDER];
+  const le = landmarks[LM.LEFT_ELBOW],    re = landmarks[LM.RIGHT_ELBOW];
+  const lw = landmarks[LM.LEFT_WRIST],    rw = landmarks[LM.RIGHT_WRIST];
+  const lh = landmarks[LM.LEFT_HIP],      rh = landmarks[LM.RIGHT_HIP];
+  const lk = landmarks[LM.LEFT_KNEE],     rk = landmarks[LM.RIGHT_KNEE];
+  const la = landmarks[LM.LEFT_ANKLE],    ra = landmarks[LM.RIGHT_ANKLE];
+
+  const sh = avgPoint(ls, rs);
+  const hp = avgPoint(lh, rh);
+
+  const kneeL = angleBetween(lh, lk, la);
+  const kneeR = angleBetween(rh, rk, ra);
+  const hipL  = angleBetween(ls, lh, lk);
+  const hipR  = angleBetween(rs, rh, rk);
+  const elbL  = angleBetween(ls, le, lw);
+  const elbR  = angleBetween(rs, re, rw);
+  const shdL  = angleBetween(le, ls, lh);
+  const shdR  = angleBetween(re, rs, rh);
+
+  function meanDefined(vals) {
+    const v = vals.filter(x => x != null);
+    if (!v.length) return null;
+    return v.reduce((a, b) => a + b, 0) / v.length;
+  }
+
+  return {
+    knee:     meanDefined([kneeL, kneeR]),
+    hip:      meanDefined([hipL, hipR]),
+    elbow:    meanDefined([elbL, elbR]),
+    shoulder: meanDefined([shdL, shdR]),
+    backLean: trunkLeanFromVertical(sh, hp),
+    hipY:     hp?.y ?? null,
+    sh, hp,
+  };
+}
+
+function verdictForAngle(value, range) {
+  if (value == null) return { state: 'unknown', diff: null };
+  const [lo, hi] = range;
+  if (value >= lo && value <= hi) return { state: 'ok', diff: 0 };
+  const span = Math.max(1, hi - lo);
+  const out = value < lo ? lo - value : value - hi;
+  const rel = out / span;
+  if (rel <= 0.15) return { state: 'warning', diff: value < lo ? -out : out };
+  return { state: 'error', diff: value < lo ? -out : out };
+}
+
+function pickKeyFrames(exerciseId, frames) {
+  const valid = frames.filter(f => f.angles);
+  if (!valid.length) return [];
+  const first = valid[0], last = valid[valid.length - 1];
+
+  if (exerciseId === 'squat') {
+    const bottom = valid.reduce((best, f) =>
+      (f.angles.hipY != null && (best == null || f.angles.hipY > best.angles.hipY)) ? f : best, null);
+    const out = [];
+    if (first) out.push({ ...first, phase: 'lockout' });
+    if (bottom && bottom !== first && bottom !== last) out.push({ ...bottom, phase: 'bottom' });
+    if (last && last !== first) out.push({ ...last, phase: 'lockout' });
+    return out;
+  }
+  if (exerciseId === 'bench') {
+    const bottom = valid.reduce((best, f) =>
+      (f.angles.elbow != null && (best == null || f.angles.elbow < best.angles.elbow)) ? f : best, null);
+    const top = valid.reduce((best, f) =>
+      (f.angles.elbow != null && (best == null || f.angles.elbow > best.angles.elbow)) ? f : best, null);
+    const out = [];
+    if (bottom) out.push({ ...bottom, phase: 'bottom' });
+    if (top && top !== bottom) out.push({ ...top, phase: 'lockout' });
+    return out;
+  }
+  if (exerciseId === 'deadlift') {
+    const start = valid.reduce((best, f) =>
+      (f.angles.hipY != null && (best == null || f.angles.hipY > best.angles.hipY)) ? f : best, null);
+    const lockout = valid.reduce((best, f) =>
+      (f.angles.hipY != null && (best == null || f.angles.hipY < best.angles.hipY)) ? f : best, null);
+    const out = [];
+    if (start) out.push({ ...start, phase: 'start' });
+    if (lockout && lockout !== start) out.push({ ...lockout, phase: 'lockout' });
+    return out;
+  }
+  const mid = valid[Math.floor(valid.length / 2)];
+  return [
+    { ...first, phase: 'lockout' },
+    ...(mid && mid !== first && mid !== last ? [{ ...mid, phase: 'bottom' }] : []),
+    ...(last && last !== first ? [{ ...last, phase: 'lockout' }] : []),
+  ];
+}
+
+function captureFrameDataURL(video, targetHeight = POSE_SCREENSHOT_HEIGHT, quality = 0.75) {
+  const ratio = video.videoWidth / video.videoHeight || 1;
+  const h = Math.min(targetHeight, video.videoHeight || targetHeight);
+  const w = Math.round(h * ratio);
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const ctx = c.getContext('2d');
+  ctx.drawImage(video, 0, 0, w, h);
+  return c.toDataURL('image/jpeg', quality);
+}
+
+function seekVideo(video, t) {
+  return new Promise((resolve, reject) => {
+    let done = false;
+    function onSeeked() {
+      if (done) return;
+      done = true;
+      video.removeEventListener('seeked', onSeeked);
+      video.removeEventListener('error', onError);
+      resolve();
+    }
+    function onError(e) {
+      if (done) return;
+      done = true;
+      video.removeEventListener('seeked', onSeeked);
+      video.removeEventListener('error', onError);
+      reject(e);
+    }
+    video.addEventListener('seeked', onSeeked);
+    video.addEventListener('error', onError);
+    try { video.currentTime = Math.min(t, video.duration - 0.01); }
+    catch (e) { onError(e); }
+  });
+}
+
+async function analyzeVideoForPose(file, exerciseId, onProgress) {
+  if (!file) throw new Error('Keine Datei.');
+  const formAngles = FORM_ANGLES[exerciseId];
+  if (!formAngles) throw new Error('Übung wird (noch) nicht unterstützt.');
+
+  const landmarker = await loadPoseLandmarker(onProgress);
+  onProgress?.('🎞 Lade Video …', 0.05);
+
+  const url = URL.createObjectURL(file);
+  const video = document.createElement('video');
+  video.style.position = 'fixed';
+  video.style.left = '-9999px';
+  video.style.top = '0';
+  video.muted = true;
+  video.playsInline = true;
+  video.preload = 'auto';
+  video.src = url;
+  document.body.appendChild(video);
+
+  const cleanup = () => {
+    try { URL.revokeObjectURL(url); } catch {}
+    try { video.removeAttribute('src'); video.load(); } catch {}
+    try { video.remove(); } catch {}
+  };
+
+  try {
+    await new Promise((resolve, reject) => {
+      let done = false;
+      video.addEventListener('loadedmetadata', () => { if (!done) { done = true; resolve(); } });
+      video.addEventListener('error', e => { if (!done) { done = true; reject(new Error('Video konnte nicht geladen werden.')); } });
+      setTimeout(() => { if (!done) { done = true; reject(new Error('Timeout beim Laden des Videos.')); } }, 15000);
+    });
+
+    const duration = Math.min(video.duration || 0, POSE_MAX_DURATION);
+    if (!duration || !isFinite(duration)) throw new Error('Videolänge konnte nicht bestimmt werden.');
+
+    const frames = [];
+    const steps = Math.max(2, Math.floor(duration * 1000 / POSE_SAMPLE_MS));
+    for (let i = 0; i <= steps; i++) {
+      const t = (i / steps) * duration;
+      await seekVideo(video, t);
+      const tsMs = Math.floor(t * 1000);
+      let result;
+      try { result = landmarker.detectForVideo(video, tsMs); }
+      catch (e) { console.warn('detectForVideo failed at', t, e); continue; }
+      const lm = result?.landmarks?.[0];
+      const angles = computeFrameAngles(lm);
+      frames.push({ t, angles });
+      onProgress?.(`🧠 Analysiere Frames … ${i + 1}/${steps + 1}`, 0.1 + 0.6 * (i / steps));
+    }
+
+    const detected = frames.filter(f => f.angles).length;
+    if (detected < 3) {
+      throw new Error('Keine Pose erkannt — achte darauf, dass dein ganzer Körper im Bild ist (seitliche Aufnahme funktioniert am besten).');
+    }
+
+    onProgress?.('📸 Wähle Key-Frames …', 0.75);
+    const keys = pickKeyFrames(exerciseId, frames);
+    if (!keys.length) throw new Error('Konnte keine Key-Frames bestimmen.');
+
+    const phases = formAngles.phases;
+    const keyframes = [];
+    for (let i = 0; i < keys.length; i++) {
+      const k = keys[i];
+      await seekVideo(video, k.t);
+      const dataUrl = captureFrameDataURL(video);
+      const phaseDef = phases[k.phase] || Object.values(phases)[0];
+      const checks = [];
+      for (const [name, def] of Object.entries(phaseDef.targets)) {
+        const value = k.angles[name];
+        const verdict = verdictForAngle(value, def.range);
+        checks.push({ name, value: value != null ? Math.round(value) : null, range: def.range, label: def.label, tip: def.tip, state: verdict.state, diff: verdict.diff != null ? Math.round(verdict.diff) : null });
+      }
+      keyframes.push({ t: k.t, phase: k.phase, phaseLabel: phaseDef.label, dataUrl, checks });
+      onProgress?.(`📸 Screenshot ${i + 1}/${keys.length}`, 0.8 + 0.15 * (i / keys.length));
+    }
+
+    const issues = [];
+    keyframes.forEach(kf => {
+      kf.checks.forEach(c => {
+        if (c.state === 'error') issues.push(`${kf.phaseLabel}: ${c.label} bei ${c.value}° (Soll ${c.range[0]}–${c.range[1]}°) — ${c.tip}`);
+      });
+    });
+    let summary;
+    if (!issues.length) {
+      const warns = keyframes.flatMap(kf => kf.checks.filter(c => c.state === 'warning').map(c => `${kf.phaseLabel}: ${c.label} ${c.value}° (knapp am Limit)`));
+      summary = warns.length
+        ? `Saubere Ausführung — alle Hauptwinkel im grünen Bereich. Knapp:\n- ${warns.join('\n- ')}`
+        : `Saubere Ausführung — alle erkannten Winkel innerhalb der Soll-Bereiche. Weiter so!`;
+    } else {
+      summary = `Verbesserungs­potenzial gefunden:\n- ${issues.join('\n- ')}`;
+    }
+
+    onProgress?.('✅ Fertig', 1);
+
+    return {
+      exerciseId,
+      exerciseLabel: formAngles.label,
+      keyframes,
+      summary,
+      generatedAt: Date.now(),
+      framesAnalyzed: detected,
+      durationSec: Math.round(duration * 10) / 10,
+    };
+  } finally {
+    cleanup();
+  }
+}
+
+function shrinkDataUrl(dataUrl, targetHeight, quality) {
+  if (!dataUrl) return dataUrl;
+  try {
+    const img = new Image();
+    img.src = dataUrl;
+    if (!img.complete || !img.naturalWidth) return dataUrl;
+    const ratio = img.naturalWidth / img.naturalHeight;
+    const h = Math.min(targetHeight, img.naturalHeight);
+    const w = Math.round(h * ratio);
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    c.getContext('2d').drawImage(img, 0, 0, w, h);
+    return c.toDataURL('image/jpeg', quality);
+  } catch { return dataUrl; }
+}
+
+function saveVideoAnalysis(setState, exerciseId, report) {
+  const SIZE_LIMIT = 800_000;
+  let toSave = report;
+  let payload = JSON.stringify(toSave);
+  if (payload.length > SIZE_LIMIT) {
+    toSave = { ...report, keyframes: report.keyframes.map(kf => ({ ...kf, dataUrl: shrinkDataUrl(kf.dataUrl, 220, 0.55) })) };
+    payload = JSON.stringify(toSave);
+  }
+  if (payload.length > SIZE_LIMIT) {
+    toSave = { ...report, keyframes: report.keyframes.map(kf => ({ ...kf, dataUrl: null })), imagesDroppedForStorage: true };
+  }
+  setState(s => ({
+    ...s,
+    videoAnalyses: { ...(s.videoAnalyses || {}), [exerciseId]: toSave },
+  }));
+  return toSave;
+}
+
+// ─────────────────────────────────────────────────────────────
 // EXPORT TO WINDOW
 // ─────────────────────────────────────────────────────────────
 window.FT = {
   TRAINING_PLAN, SESSION_ORDER, SESSION_DOW, PLATE_COLORS,
-  MUSCLE_MAP, FORM_CUES, MOBILITY_ROUTINES,
+  MUSCLE_MAP, FORM_CUES, FORM_ANGLES, MOBILITY_ROUTINES,
   loadState, saveState, defaultState, mergeDefaults,
   suggestNextWeight, findLastSession, findLastForExercise, exerciseHistory,
   estimate1RM, bestEstimate1RM, generateWarmups, generateWarmupsWendler, generateWarmupsBy,
@@ -797,10 +1568,12 @@ window.FT = {
   suggestSessionToday, rpeCeiling,
   // new
   calcStreak, sessionVolume, volumeByMuscle, detectPRs, detectStall, allTimePRs,
-  getCues, getMuscles, getSessionExercises,
+  getCues, getMuscles, getFormAngles, getSessionExercises,
   getMobilityRoutine, listMobilityRoutines,
   requestWakeLock, releaseWakeLock,
   rpeToRir, rirToRpe,
+  // pose video analysis
+  analyzeVideoForPose, saveVideoAnalysis, loadPoseLandmarker,
 };
 
   </script>
@@ -3886,6 +4659,287 @@ window.PRCelebration = PRCelebration;
 
   </script>
   <script type="text/babel">
+/* global React, FT, Btn, Card, Label, Pill */
+// app-coach-video.jsx — Video-Upload + Pose-/Winkel-Analyse (Coach Tab)
+
+const { useState: useStateV, useEffect: useEffectV, useRef: useRefV, useMemo: useMemoV } = React;
+
+const SUPPORTED_EXERCISES = ['squat', 'bench', 'deadlift'];
+
+function VideoTab({ theme, state, setState }) {
+  const [exerciseId, setExerciseId] = useStateV('squat');
+  const [phase, setPhase] = useStateV('idle');      // idle | analyzing | done | error
+  const [progress, setProgress] = useStateV(0);
+  const [statusMsg, setStatusMsg] = useStateV('');
+  const [error, setError] = useStateV('');
+  const [result, setResult] = useStateV(null);
+  const fileRef = useRefV(null);
+
+  // Gespeicherten Report für aktuelle Übung laden, wenn nichts in der Session läuft
+  const storedReport = useMemoV(
+    () => state.videoAnalyses?.[exerciseId] || null,
+    [state.videoAnalyses, exerciseId]
+  );
+  useEffectV(() => {
+    if (phase === 'idle' || phase === 'done') {
+      setResult(storedReport || null);
+      setError('');
+      setStatusMsg('');
+      setProgress(0);
+    }
+  }, [exerciseId, storedReport]);
+
+  async function onFileChosen(e) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (file.size > 200 * 1024 * 1024) {
+      setError('Video ist > 200 MB. Bitte kürzer aufnehmen oder vorher exportieren.');
+      setPhase('error');
+      return;
+    }
+    setPhase('analyzing');
+    setProgress(0.02);
+    setError('');
+    setStatusMsg('🚀 Starte Analyse …');
+    setResult(null);
+    try {
+      const report = await FT.analyzeVideoForPose(file, exerciseId, (msg, p) => {
+        if (msg) setStatusMsg(msg);
+        if (typeof p === 'number') setProgress(p);
+      });
+      // In localStorage ablegen (mit Größen-Guard)
+      const saved = FT.saveVideoAnalysis(setState, exerciseId, report);
+      setResult(saved);
+      setPhase('done');
+    } catch (err) {
+      console.error(err);
+      setError(err?.message || 'Unbekannter Fehler bei der Analyse.');
+      setPhase('error');
+    }
+  }
+
+  function reset() {
+    setPhase('idle');
+    setProgress(0);
+    setStatusMsg('');
+    setError('');
+    setResult(storedReport || null);
+  }
+
+  return (
+    <div style={{ padding: '0 22px' }}>
+      {/* Übungsauswahl */}
+      <Label theme={theme} style={{ marginBottom: 6 }}>Übung wählen</Label>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
+        {SUPPORTED_EXERCISES.map(id => {
+          const def = FT.FORM_ANGLES[id];
+          const active = exerciseId === id;
+          return (
+            <button key={id} onClick={() => setExerciseId(id)} style={{
+              flex: 1, padding: '10px 8px', borderRadius: theme.radius,
+              background: active ? theme.accent : theme.surface2,
+              color: active ? theme.accentText : theme.text,
+              border: `1px solid ${active ? theme.accent : theme.border}`,
+              fontSize: 11, fontWeight: 700, fontFamily: 'inherit',
+              cursor: 'pointer',
+            }}>{def?.label || id}</button>
+          );
+        })}
+      </div>
+
+      {/* Upload-Karte */}
+      <Card theme={theme} style={{ padding: 16 }}>
+        <Label theme={theme}>Video-Analyse</Label>
+        <div style={{ marginTop: 6, fontSize: 13, color: theme.mutedStrong, lineHeight: 1.5 }}>
+          Lade ein kurzes Video (5–60 s) deines Satzes hoch.
+          Am besten <strong>seitlich</strong> aufgenommen mit gut sichtbarem Ganzkörper.
+          Die Analyse läuft komplett auf deinem Gerät.
+        </div>
+        <div style={{ height: 14 }} />
+        <input
+          ref={fileRef}
+          type="file"
+          accept="video/*"
+          capture="environment"
+          onChange={onFileChosen}
+          style={{ display: 'none' }}
+        />
+        <Btn
+          theme={theme}
+          kind="primary"
+          full
+          onClick={() => fileRef.current?.click()}
+          disabled={phase === 'analyzing'}
+        >
+          {phase === 'analyzing'
+            ? '⏳ Analysiere …'
+            : (result ? '📹 Neues Video analysieren' : '📹 Video auswählen')}
+        </Btn>
+
+        {phase === 'analyzing' && (
+          <div style={{ marginTop: 14 }}>
+            <div style={{
+              height: 6, borderRadius: 3, background: theme.surface2, overflow: 'hidden',
+            }}>
+              <div style={{
+                height: '100%', width: `${Math.round((progress || 0) * 100)}%`,
+                background: theme.accent, transition: 'width .2s ease',
+              }} />
+            </div>
+            <div style={{ marginTop: 8, fontSize: 11, color: theme.muted, fontFamily: theme.fontMono }}>
+              {statusMsg || '…'}
+            </div>
+          </div>
+        )}
+      </Card>
+
+      {error && (
+        <div style={{
+          marginTop: 12, padding: 14, borderRadius: theme.radius,
+          background: theme.danger + '15', color: theme.danger,
+          border: `1px solid ${theme.danger}40`, fontSize: 12,
+        }}>{error}</div>
+      )}
+
+      {/* Ergebnis */}
+      {result && phase !== 'analyzing' && (
+        <div style={{ marginTop: 14 }}>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            marginBottom: 10,
+          }}>
+            <Label theme={theme}>
+              Letzte Analyse · {result.exerciseLabel || result.exerciseId}
+            </Label>
+            <span style={{ fontSize: 10, color: theme.muted, fontFamily: theme.fontMono }}>
+              {result.generatedAt ? new Date(result.generatedAt).toLocaleString('de-DE') : ''}
+            </span>
+          </div>
+
+          {result.imagesDroppedForStorage && (
+            <div style={{
+              marginBottom: 10, padding: 10, borderRadius: theme.radius,
+              background: theme.surface2, fontSize: 11, color: theme.muted,
+            }}>
+              ℹ️ Bilder wurden aus Speicherplatz-Gründen verworfen — nur Winkelwerte sind erhalten.
+            </div>
+          )}
+
+          {/* Keyframes */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {result.keyframes.map((kf, i) => (
+              <KeyframeCard key={i} theme={theme} kf={kf} />
+            ))}
+          </div>
+
+          {/* Summary */}
+          {result.summary && (
+            <div style={{
+              marginTop: 14, padding: 18, borderRadius: theme.radiusLg,
+              background: theme.surface, border: `1px solid ${theme.border}`,
+              fontSize: 13.5, lineHeight: 1.7, color: theme.text, whiteSpace: 'pre-wrap',
+            }}>{result.summary}</div>
+          )}
+
+          {phase === 'done' && (
+            <div style={{ marginTop: 12 }}>
+              <Btn theme={theme} kind="ghost" full onClick={reset}>↺ Neue Analyse</Btn>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Privacy / Disclaimer */}
+      <div style={{
+        marginTop: 14, padding: 12, borderRadius: theme.radius,
+        background: theme.surface2, fontSize: 10, color: theme.muted,
+        fontFamily: theme.fontMono, lineHeight: 1.5,
+      }}>
+        🔒 Video wird lokal verarbeitet — nichts verlässt dein Gerät.
+        Soll-Winkel sind Richtwerte; bei Schmerzen / Verletzungen mit Physio sprechen.
+      </div>
+    </div>
+  );
+}
+
+function KeyframeCard({ theme, kf }) {
+  return (
+    <div style={{
+      borderRadius: theme.radius, background: theme.surface,
+      border: `1px solid ${theme.border}`, overflow: 'hidden',
+    }}>
+      {kf.dataUrl && (
+        <div style={{ position: 'relative', background: '#000' }}>
+          <img
+            src={kf.dataUrl}
+            alt={kf.phaseLabel}
+            style={{ display: 'block', width: '100%', height: 'auto', maxHeight: 280, objectFit: 'contain' }}
+          />
+          <div style={{
+            position: 'absolute', left: 8, top: 8,
+            padding: '4px 10px', borderRadius: 999,
+            background: 'rgba(0,0,0,0.7)', color: '#fff',
+            fontSize: 10, fontWeight: 700, letterSpacing: 0.5,
+          }}>
+            {kf.phaseLabel} · {kf.t.toFixed(1)} s
+          </div>
+        </div>
+      )}
+      <div style={{ padding: 14 }}>
+        {!kf.dataUrl && (
+          <div style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, color: theme.text }}>
+            {kf.phaseLabel} · {kf.t.toFixed(1)} s
+          </div>
+        )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {kf.checks.map((c, i) => (
+            <CheckRow key={i} theme={theme} check={c} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CheckRow({ theme, check }) {
+  const palette = {
+    ok:      { bg: theme.accent + '20', fg: theme.accent || theme.text, label: '✓ ok' },
+    warning: { bg: '#FFB80020',         fg: '#FFB800',                  label: '! knapp' },
+    error:   { bg: theme.danger + '20', fg: theme.danger,               label: '✕ daneben' },
+    unknown: { bg: theme.surface2,      fg: theme.muted,                label: '? unklar' },
+  };
+  const p = palette[check.state] || palette.unknown;
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: '8px 10px', borderRadius: theme.radius,
+      background: theme.surface2,
+    }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: theme.text }}>{check.label}</div>
+        <div style={{ fontSize: 10, color: theme.muted, fontFamily: theme.fontMono, marginTop: 2 }}>
+          {check.value != null ? `${check.value}°` : '—'} · Soll {check.range[0]}–{check.range[1]}°
+        </div>
+        {check.state !== 'ok' && check.state !== 'unknown' && check.tip && (
+          <div style={{ fontSize: 11, color: theme.mutedStrong, marginTop: 4, lineHeight: 1.4 }}>
+            {check.tip}
+          </div>
+        )}
+      </div>
+      <span style={{
+        marginLeft: 10, padding: '4px 10px', borderRadius: 999,
+        background: p.bg, color: p.fg,
+        fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap',
+      }}>{p.label}</span>
+    </div>
+  );
+}
+
+window.VideoTab = VideoTab;
+
+  </script>
+  <script type="text/babel">
 /* global React, FT */
 // app-coach.jsx — Coach screen: Claude feedback, Form-Cues, Custom Übungen, Replace
 
@@ -3915,21 +4969,23 @@ function CoachScreen({ theme, state, setState, onClose }) {
       {/* Tabs */}
       <div style={{ padding: '0 22px 14px', display: 'flex', gap: 4 }}>
         {[
-          { id: 'feedback', label: '🤖 Feedback' },
+          { id: 'feedback', label: '🤖 KI' },
+          { id: 'video',    label: '📹 Video' },
           { id: 'cues',     label: '🎯 Form' },
-          { id: 'custom',   label: '➕ Übungen' },
+          { id: 'custom',   label: '➕ Übung' },
         ].map(t => (
           <button key={t.id} onClick={() => setTab(t.id)} style={{
             flex: 1, padding: '10px 0', borderRadius: theme.radius,
             background: tab === t.id ? theme.surface : 'transparent',
             color: tab === t.id ? theme.text : theme.muted,
             border: `1px solid ${tab === t.id ? theme.borderStrong : 'transparent'}`,
-            fontSize: 12, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer',
+            fontSize: 11, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer',
           }}>{t.label}</button>
         ))}
       </div>
 
       {tab === 'feedback' && <FeedbackTab theme={theme} state={state} />}
+      {tab === 'video'    && <VideoTab    theme={theme} state={state} setState={setState} />}
       {tab === 'cues'     && <CuesTab     theme={theme} />}
       {tab === 'custom'   && <CustomTab   theme={theme} state={state} setState={setState} />}
     </div>
@@ -4274,15 +5330,382 @@ window.CoachScreen = CoachScreen;
 // app-mobility.jsx — Mobility-Sessions (Beweglichkeit, getrennt vom Krafttraining)
 //
 // View 1: Routinen-Auswahl + kurze Historie.
-// View 2: Aktive Session — pro Übung ein Countdown (oder Wdh), Bell am Ende,
-//         "Weiter" bis "Fertig". Speichert {date, routineId, durationSec, completed}.
+// View 2: Aktive Session — pro Übung Strichfigur-Pose, Timer (oder Wdh),
+//         aufklappbare Anleitung (Setup, Schritte, Tipp, häufige Fehler).
+//         Speichert {date, routineId, durationSec, completed} in state.mobility.
 
 const { useState: useStateMob, useEffect: useEffectMob, useRef: useRefMob } = React;
 
+// ─────────────────────────────────────────────────────────────
+// SVG POSES — kleine Strichfiguren pro Bewegungstyp
+// Erwartet { theme } als Prop. ViewBox 200×200.
+// Konvention: Hauptkörper = theme.text, aktiver Teil = theme.accent.
+// ─────────────────────────────────────────────────────────────
+function PoseFrame({ theme, children }) {
+  return (
+    <svg viewBox="0 0 200 200" width="100%" height="100%"
+      style={{ display: 'block' }}
+      strokeLinecap="round" strokeLinejoin="round" fill="none">
+      {/* Boden */}
+      <line x1="10" y1="180" x2="190" y2="180" stroke={theme.muted} strokeOpacity="0.35" strokeWidth="1.5" strokeDasharray="3 4" />
+      {children}
+    </svg>
+  );
+}
+
+const POSES = {
+  // 90/90 Sitz — Seitenansicht, Beine vorn/hinten gewinkelt
+  seated_90_90: (theme) => (
+    <PoseFrame theme={theme}>
+      {/* Kopf */}
+      <circle cx="100" cy="50" r="11" stroke={theme.text} strokeWidth="3" />
+      {/* Trunk aufrecht */}
+      <line x1="100" y1="61" x2="100" y2="118" stroke={theme.text} strokeWidth="4" />
+      {/* Arme nach unten/leicht vorn */}
+      <path d="M100 78 L78 110" stroke={theme.text} strokeWidth="3" />
+      <path d="M100 78 L122 108" stroke={theme.text} strokeWidth="3" />
+      {/* Vorderes Bein 90° */}
+      <path d="M100 118 L150 145 L150 175" stroke={theme.accent} strokeWidth="4.5" />
+      {/* Hinteres Bein 90° (gespiegelt zur Seite) */}
+      <path d="M100 118 L60 138 L88 168" stroke={theme.accent} strokeWidth="4.5" />
+      {/* Knie-Punkte */}
+      <circle cx="150" cy="145" r="3" fill={theme.accent} />
+      <circle cx="60" cy="138" r="3" fill={theme.accent} />
+    </PoseFrame>
+  ),
+
+  // Couch-Stretch — Halbkniestand gegen Wand
+  couch_stretch: (theme) => (
+    <PoseFrame theme={theme}>
+      {/* Wand rechts */}
+      <line x1="170" y1="40" x2="170" y2="180" stroke={theme.muted} strokeOpacity="0.45" strokeWidth="2" />
+      {/* Kopf */}
+      <circle cx="80" cy="55" r="11" stroke={theme.text} strokeWidth="3" />
+      {/* Trunk leicht nach hinten lehnend */}
+      <line x1="80" y1="66" x2="92" y2="118" stroke={theme.text} strokeWidth="4" />
+      {/* Arm auf vorderes Knie */}
+      <path d="M85 78 L65 120" stroke={theme.text} strokeWidth="3" />
+      <path d="M88 80 L100 118" stroke={theme.text} strokeWidth="3" />
+      {/* Vorderes Bein 90° (links) */}
+      <path d="M92 118 L65 145 L65 180" stroke={theme.text} strokeWidth="4" />
+      <circle cx="65" cy="145" r="3" fill={theme.text} />
+      {/* Hinteres Bein: Knie am Boden, Schienbein hoch zur Wand */}
+      <path d="M92 118 L125 178" stroke={theme.accent} strokeWidth="4.5" />
+      <path d="M125 178 L170 145" stroke={theme.accent} strokeWidth="4.5" />
+      <circle cx="125" cy="178" r="3" fill={theme.accent} />
+      {/* Fuß an Wand */}
+      <line x1="166" y1="142" x2="174" y2="148" stroke={theme.accent} strokeWidth="3" />
+    </PoseFrame>
+  ),
+
+  // Tiefe Hocke
+  deep_squat: (theme) => (
+    <PoseFrame theme={theme}>
+      <circle cx="100" cy="38" r="11" stroke={theme.text} strokeWidth="3" />
+      {/* Trunk leicht nach vorn */}
+      <line x1="100" y1="49" x2="103" y2="98" stroke={theme.text} strokeWidth="4" />
+      {/* Arme zwischen Knien */}
+      <path d="M100 65 L78 95 L75 120" stroke={theme.text} strokeWidth="3" />
+      <path d="M100 65 L122 95 L127 120" stroke={theme.text} strokeWidth="3" />
+      {/* Beine — Hocke */}
+      <path d="M103 98 L70 130 L72 178" stroke={theme.accent} strokeWidth="4.5" />
+      <path d="M103 98 L135 130 L132 178" stroke={theme.accent} strokeWidth="4.5" />
+      <circle cx="70" cy="130" r="3" fill={theme.accent} />
+      <circle cx="135" cy="130" r="3" fill={theme.accent} />
+    </PoseFrame>
+  ),
+
+  // Vierfüßler
+  quadruped: (theme) => (
+    <PoseFrame theme={theme}>
+      {/* Kopf vorne links */}
+      <circle cx="40" cy="92" r="11" stroke={theme.text} strokeWidth="3" />
+      {/* Rücken neutral, horizontal */}
+      <line x1="51" y1="95" x2="150" y2="105" stroke={theme.accent} strokeWidth="4.5" />
+      {/* Vorderbeine — Arme runter */}
+      <line x1="56" y1="98" x2="58" y2="178" stroke={theme.text} strokeWidth="4" />
+      {/* Hinterbeine — Knie am Boden, Unterschenkel */}
+      <path d="M148 108 L150 150 L172 178" stroke={theme.text} strokeWidth="4" />
+      <circle cx="150" cy="150" r="3" fill={theme.text} />
+    </PoseFrame>
+  ),
+
+  // Schulter-CARs — Arm zeichnet großen Kreis
+  shoulder_cars: (theme) => (
+    <PoseFrame theme={theme}>
+      <circle cx="100" cy="40" r="11" stroke={theme.text} strokeWidth="3" />
+      <line x1="100" y1="51" x2="100" y2="130" stroke={theme.text} strokeWidth="4" />
+      {/* Standarm links */}
+      <line x1="100" y1="68" x2="78" y2="108" stroke={theme.text} strokeWidth="3" />
+      {/* Aktiver Arm rechts — zeigt nach oben/außen */}
+      <line x1="100" y1="68" x2="155" y2="50" stroke={theme.accent} strokeWidth="4.5" />
+      <circle cx="155" cy="50" r="3" fill={theme.accent} />
+      {/* Kreis-Andeutung */}
+      <circle cx="100" cy="100" r="60" stroke={theme.accent} strokeOpacity="0.35" strokeWidth="2" strokeDasharray="3 5" />
+      {/* Pfeilspitze auf der Kreis-Bahn */}
+      <path d="M150 145 L158 142 L156 152" stroke={theme.accent} strokeOpacity="0.55" strokeWidth="2" />
+      {/* Beine */}
+      <line x1="100" y1="130" x2="85" y2="178" stroke={theme.text} strokeWidth="4" />
+      <line x1="100" y1="130" x2="115" y2="178" stroke={theme.text} strokeWidth="4" />
+    </PoseFrame>
+  ),
+
+  // Band Pass-Through — Stab/Band überkopf, weite Hände
+  band_overhead: (theme) => (
+    <PoseFrame theme={theme}>
+      <circle cx="100" cy="58" r="11" stroke={theme.text} strokeWidth="3" />
+      <line x1="100" y1="69" x2="100" y2="140" stroke={theme.text} strokeWidth="4" />
+      {/* Arme nach oben/außen breit */}
+      <line x1="100" y1="78" x2="50" y2="42" stroke={theme.accent} strokeWidth="4.5" />
+      <line x1="100" y1="78" x2="150" y2="42" stroke={theme.accent} strokeWidth="4.5" />
+      {/* Band/Stab über dem Kopf */}
+      <line x1="40" y1="36" x2="160" y2="36" stroke={theme.accent} strokeWidth="3.5" />
+      <circle cx="40" cy="36" r="3.5" fill={theme.accent} />
+      <circle cx="160" cy="36" r="3.5" fill={theme.accent} />
+      {/* Beine */}
+      <line x1="100" y1="140" x2="85" y2="178" stroke={theme.text} strokeWidth="4" />
+      <line x1="100" y1="140" x2="115" y2="178" stroke={theme.text} strokeWidth="4" />
+      {/* Bewegungspfeile */}
+      <path d="M40 60 L40 28 M34 36 L40 26 L46 36" stroke={theme.accent} strokeOpacity="0.5" strokeWidth="2" />
+    </PoseFrame>
+  ),
+
+  // Wall Slides — gegen Wand mit Armen oben (W/Y)
+  wall_slides: (theme) => (
+    <PoseFrame theme={theme}>
+      {/* Wand links */}
+      <line x1="48" y1="20" x2="48" y2="180" stroke={theme.muted} strokeOpacity="0.45" strokeWidth="2" />
+      {/* Kopf */}
+      <circle cx="62" cy="42" r="11" stroke={theme.text} strokeWidth="3" />
+      {/* Trunk dicht an Wand */}
+      <line x1="60" y1="53" x2="62" y2="135" stroke={theme.text} strokeWidth="4" />
+      {/* Oberarme schräg nach oben (Y-form) */}
+      <line x1="62" y1="70" x2="105" y2="38" stroke={theme.accent} strokeWidth="4.5" />
+      <line x1="62" y1="70" x2="105" y2="92" stroke={theme.accent} strokeWidth="3.5" strokeOpacity="0.6" />
+      {/* Unterarme bei 90° (vor Kopf) — Skizze */}
+      <line x1="105" y1="38" x2="120" y2="55" stroke={theme.accent} strokeWidth="4.5" />
+      {/* Beine leicht */}
+      <line x1="62" y1="135" x2="55" y2="178" stroke={theme.text} strokeWidth="4" />
+      <line x1="62" y1="135" x2="78" y2="178" stroke={theme.text} strokeWidth="4" />
+      {/* Pfeil für Slide */}
+      <path d="M155 60 L155 30 M149 38 L155 28 L161 38" stroke={theme.accent} strokeOpacity="0.5" strokeWidth="2" />
+      <path d="M155 130 L155 100 M149 122 L155 132 L161 122" stroke={theme.accent} strokeOpacity="0.5" strokeWidth="2" />
+    </PoseFrame>
+  ),
+
+  // Seitlage Open Book — Knie zusammen, oberer Arm öffnet auf
+  side_lying: (theme) => (
+    <PoseFrame theme={theme}>
+      {/* Kopf rechts liegend */}
+      <circle cx="170" cy="105" r="11" stroke={theme.text} strokeWidth="3" />
+      {/* Trunk horizontal */}
+      <line x1="159" y1="108" x2="80" y2="118" stroke={theme.text} strokeWidth="4" />
+      {/* Unterer Arm liegt unten am Boden Richtung Kopf */}
+      <line x1="155" y1="118" x2="130" y2="155" stroke={theme.text} strokeWidth="3" strokeOpacity="0.7" />
+      {/* Oberer Arm geöffnet nach hinten/oben (Open Book) */}
+      <line x1="155" y1="118" x2="95" y2="58" stroke={theme.accent} strokeWidth="4.5" />
+      <circle cx="95" cy="58" r="3.5" fill={theme.accent} />
+      {/* Beine gestapelt, Knie 90° */}
+      <path d="M80 118 L40 122 L25 152" stroke={theme.text} strokeWidth="4" />
+      <circle cx="40" cy="122" r="3" fill={theme.text} />
+      {/* Rotations-Bogen */}
+      <path d="M125 105 A 30 30 0 0 0 105 75" stroke={theme.accent} strokeOpacity="0.45" strokeWidth="2" strokeDasharray="3 4" />
+    </PoseFrame>
+  ),
+
+  // BWS auf Foam Roller — Rückenlage, Roller unter Oberkörper
+  tspine_roller: (theme) => (
+    <PoseFrame theme={theme}>
+      {/* Foam Roller — kleine Ellipse unter BWS */}
+      <ellipse cx="100" cy="125" rx="22" ry="8" stroke={theme.muted} strokeOpacity="0.7" strokeWidth="2" fill={theme.surface2} />
+      {/* Kopf nach hinten/oben offen */}
+      <circle cx="62" cy="108" r="11" stroke={theme.text} strokeWidth="3" />
+      {/* Oberkörper schräg über Roller, BWS offen */}
+      <line x1="73" y1="112" x2="123" y2="117" stroke={theme.accent} strokeWidth="4.5" />
+      {/* Po am Boden */}
+      <line x1="123" y1="117" x2="135" y2="148" stroke={theme.text} strokeWidth="4" />
+      {/* Beine angewinkelt, Füße am Boden */}
+      <path d="M135 148 L155 130 L173 175" stroke={theme.text} strokeWidth="4" />
+      <circle cx="155" cy="130" r="3" fill={theme.text} />
+      {/* Arme hinterm Kopf — Ellbogen vor Gesicht */}
+      <path d="M70 100 L45 70 L72 60" stroke={theme.text} strokeWidth="3" />
+      <path d="M75 102 L55 75" stroke={theme.text} strokeWidth="3" strokeOpacity="0.6" />
+    </PoseFrame>
+  ),
+
+  // Knee-to-Wall — Halbkniestand vor Wand, Knie bewegt sich vor
+  knee_to_wall: (theme) => (
+    <PoseFrame theme={theme}>
+      {/* Wand rechts */}
+      <line x1="172" y1="40" x2="172" y2="180" stroke={theme.muted} strokeOpacity="0.45" strokeWidth="2" />
+      {/* Kopf */}
+      <circle cx="85" cy="58" r="11" stroke={theme.text} strokeWidth="3" />
+      {/* Trunk aufrecht */}
+      <line x1="85" y1="69" x2="92" y2="120" stroke={theme.text} strokeWidth="4" />
+      {/* Hinteres Bein — Knie am Boden */}
+      <path d="M92 120 L55 178" stroke={theme.text} strokeWidth="4" />
+      {/* Vorderes Bein — Fuß flach, Knie zur Wand */}
+      <path d="M92 120 L150 130" stroke={theme.accent} strokeWidth="4.5" />
+      <circle cx="150" cy="130" r="3.5" fill={theme.accent} />
+      <path d="M150 130 L138 178" stroke={theme.accent} strokeWidth="4.5" />
+      {/* Fuß unten */}
+      <line x1="125" y1="178" x2="155" y2="178" stroke={theme.accent} strokeWidth="3" />
+      {/* Pfeil Knie zur Wand */}
+      <path d="M155 130 L172 130 M167 124 L172 130 L167 136" stroke={theme.accent} strokeOpacity="0.6" strokeWidth="2" />
+      {/* Arme an Hüfte */}
+      <line x1="88" y1="80" x2="78" y2="108" stroke={theme.text} strokeWidth="3" />
+      <line x1="88" y1="80" x2="105" y2="108" stroke={theme.text} strokeWidth="3" />
+    </PoseFrame>
+  ),
+
+  // Wadenheben — auf Zehenspitzen
+  calf_raise: (theme) => (
+    <PoseFrame theme={theme}>
+      <circle cx="100" cy="38" r="11" stroke={theme.text} strokeWidth="3" />
+      <line x1="100" y1="49" x2="100" y2="118" stroke={theme.text} strokeWidth="4" />
+      {/* Arme leicht seitlich */}
+      <line x1="100" y1="62" x2="80" y2="100" stroke={theme.text} strokeWidth="3" />
+      <line x1="100" y1="62" x2="120" y2="100" stroke={theme.text} strokeWidth="3" />
+      {/* Beine gestreckt, Fersen hoch — Füße zur Zehe gekippt */}
+      <line x1="100" y1="118" x2="85" y2="165" stroke={theme.accent} strokeWidth="4.5" />
+      <line x1="100" y1="118" x2="115" y2="165" stroke={theme.accent} strokeWidth="4.5" />
+      {/* Zehen unten am Boden */}
+      <path d="M75 165 L92 178" stroke={theme.accent} strokeWidth="4.5" />
+      <path d="M125 165 L108 178" stroke={theme.accent} strokeWidth="4.5" />
+      {/* Pfeil hoch */}
+      <path d="M150 90 L150 60 M144 68 L150 58 L156 68" stroke={theme.accent} strokeOpacity="0.55" strokeWidth="2" />
+    </PoseFrame>
+  ),
+
+  // Fußkreisen — sitzendes Bein, Fuß rotiert
+  ankle_circle: (theme) => (
+    <PoseFrame theme={theme}>
+      <circle cx="55" cy="60" r="11" stroke={theme.text} strokeWidth="3" />
+      {/* Trunk leicht zurück gelehnt */}
+      <line x1="55" y1="71" x2="68" y2="125" stroke={theme.text} strokeWidth="4" />
+      {/* Arme hinten gestützt */}
+      <line x1="55" y1="85" x2="35" y2="135" stroke={theme.text} strokeWidth="3" />
+      <line x1="62" y1="88" x2="50" y2="138" stroke={theme.text} strokeWidth="3" />
+      {/* Bein angehoben — Oberschenkel */}
+      <line x1="68" y1="125" x2="125" y2="115" stroke={theme.text} strokeWidth="4" />
+      {/* Unterschenkel */}
+      <line x1="125" y1="115" x2="160" y2="100" stroke={theme.accent} strokeWidth="4.5" />
+      <circle cx="125" cy="115" r="3" fill={theme.text} />
+      {/* Fuß-Kreis */}
+      <circle cx="167" cy="100" r="14" stroke={theme.accent} strokeOpacity="0.5" strokeWidth="2" strokeDasharray="3 4" />
+      <circle cx="167" cy="100" r="3" fill={theme.accent} />
+      {/* Pfeil im Kreis */}
+      <path d="M180 102 L178 110 L172 106" stroke={theme.accent} strokeOpacity="0.7" strokeWidth="2" />
+    </PoseFrame>
+  ),
+
+  // World's Greatest Stretch — Lunge mit Rotation, Arm zur Decke
+  worlds_greatest: (theme) => (
+    <PoseFrame theme={theme}>
+      <circle cx="115" cy="60" r="11" stroke={theme.text} strokeWidth="3" />
+      {/* Trunk leicht rotiert/lehnend */}
+      <line x1="115" y1="71" x2="100" y2="115" stroke={theme.text} strokeWidth="4" />
+      {/* Vorderes Bein tief gebeugt */}
+      <path d="M100 115 L80 145 L65 178" stroke={theme.text} strokeWidth="4" />
+      <circle cx="80" cy="145" r="3" fill={theme.text} />
+      {/* Hinteres Bein gestreckt nach hinten */}
+      <line x1="100" y1="115" x2="170" y2="178" stroke={theme.text} strokeWidth="4" />
+      {/* Stützhand am Boden */}
+      <path d="M110 82 L78 175" stroke={theme.text} strokeWidth="3" />
+      <circle cx="78" cy="175" r="3" fill={theme.text} />
+      {/* Aktiver Arm zur Decke */}
+      <line x1="118" y1="80" x2="160" y2="22" stroke={theme.accent} strokeWidth="4.5" />
+      <circle cx="160" cy="22" r="3.5" fill={theme.accent} />
+      {/* Rotations-Bogen */}
+      <path d="M135 75 A 25 25 0 0 1 152 45" stroke={theme.accent} strokeOpacity="0.45" strokeWidth="2" strokeDasharray="3 4" />
+    </PoseFrame>
+  ),
+};
+
+function MobilityPose({ theme, pose }) {
+  const renderer = POSES[pose];
+  return (
+    <div style={{
+      width: '100%', maxWidth: 240, aspectRatio: '1 / 1',
+      background: theme.surface2,
+      borderRadius: theme.radiusLg,
+      border: `1px solid ${theme.border}`,
+      padding: 14, boxSizing: 'border-box',
+    }}>
+      {renderer ? renderer(theme) : (
+        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.muted, fontSize: 32 }}>🧘</div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Anleitung — aufklappbar: Setup, Schritte, Tipp, Fehler
+// ─────────────────────────────────────────────────────────────
+function MobilityInstructions({ theme, ex, open, onToggle }) {
+  return (
+    <div style={{
+      borderRadius: theme.radius,
+      border: `1px solid ${open ? theme.borderStrong : theme.border}`,
+      background: theme.surface2, overflow: 'hidden',
+    }}>
+      <button onClick={onToggle} style={{
+        width: '100%', padding: '12px 14px',
+        background: 'transparent', border: 'none', color: theme.text,
+        fontFamily: 'inherit', fontSize: 13, fontWeight: 700,
+        cursor: 'pointer', textAlign: 'left',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <span>📖 Anleitung</span>
+        <span style={{ color: theme.muted, fontSize: 18, lineHeight: 1 }}>{open ? '−' : '+'}</span>
+      </button>
+      {open && (
+        <div style={{ padding: '0 14px 14px', borderTop: `1px solid ${theme.border}`, paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {ex.setup && (
+            <div>
+              <Label theme={theme} style={{ marginBottom: 6 }}>Setup</Label>
+              <div style={{ fontSize: 13, color: theme.mutedStrong, lineHeight: 1.6 }}>{ex.setup}</div>
+            </div>
+          )}
+          {ex.steps && ex.steps.length > 0 && (
+            <div>
+              <Label theme={theme} style={{ marginBottom: 6 }}>Schritte</Label>
+              <ol style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: theme.mutedStrong, lineHeight: 1.7 }}>
+                {ex.steps.map((s, i) => <li key={i} style={{ marginBottom: 3 }}>{s}</li>)}
+              </ol>
+            </div>
+          )}
+          {ex.tip && (
+            <div style={{
+              padding: '10px 12px', borderRadius: theme.radius,
+              background: theme.accent2 + '15', border: `1px solid ${theme.accent2}40`,
+              fontSize: 12.5, color: theme.text, lineHeight: 1.55,
+            }}>
+              <strong style={{ color: theme.accent2 }}>💡 Tipp:</strong> {ex.tip}
+            </div>
+          )}
+          {ex.mistakes && ex.mistakes.length > 0 && (
+            <div>
+              <Label theme={theme} style={{ marginBottom: 6, color: theme.danger }}>Häufige Fehler</Label>
+              <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: theme.mutedStrong, lineHeight: 1.7 }}>
+                {ex.mistakes.map((m, i) => <li key={i} style={{ marginBottom: 3 }}>{m}</li>)}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// MOBILITY SCREEN
+// ─────────────────────────────────────────────────────────────
 function MobilityScreen({ theme, state, setState, onClose }) {
   const [routineId, setRoutineId] = useStateMob(null);
   const [stepIdx, setStepIdx] = useStateMob(0);
   const [doneView, setDoneView] = useStateMob(false);
+  const [showInfo, setShowInfo] = useStateMob(false);
   const [now, setNow] = useStateMob(Date.now());
   const startedRef = useRefMob(Date.now());
   const bellPlayedRef = useRefMob(false);
@@ -4292,18 +5715,19 @@ function MobilityScreen({ theme, state, setState, onClose }) {
   const exs = routine ? routine.exercises : [];
   const ex = routine ? exs[stepIdx] : null;
 
-  // Ein Tick-Interval, nur während einer aktiven Session
+  // Tick-Interval (nur während aktiver Session)
   useEffectMob(() => {
     if (!routine || doneView) return;
     const id = setInterval(() => setNow(Date.now()), 200);
     return () => clearInterval(id);
   }, [routineId, doneView]);
 
-  // Timer pro Schritt zurücksetzen
+  // Timer pro Schritt zurücksetzen + Anleitung wieder zuklappen
   useEffectMob(() => {
     startedRef.current = Date.now();
     bellPlayedRef.current = false;
     setNow(Date.now());
+    setShowInfo(false);
   }, [stepIdx, routineId]);
 
   // Bell am Ende einer getimten Übung
@@ -4320,6 +5744,7 @@ function MobilityScreen({ theme, state, setState, onClose }) {
     setRoutineId(id);
     setStepIdx(0);
     setDoneView(false);
+    setShowInfo(false);
     sessionStartRef.current = Date.now();
   }
 
@@ -4329,6 +5754,13 @@ function MobilityScreen({ theme, state, setState, onClose }) {
       FT.playClick();
     } else {
       finish();
+    }
+  }
+
+  function prev() {
+    if (stepIdx > 0) {
+      setStepIdx(stepIdx - 1);
+      FT.playClick();
     }
   }
 
@@ -4387,7 +5819,7 @@ function MobilityScreen({ theme, state, setState, onClose }) {
     const overdue = ex.dur && remaining <= 0;
     const sideLabel = ex.side === 'left' ? 'Links' : ex.side === 'right' ? 'Rechts' : null;
 
-    const r = 100, cx = 120, cy = 120, circ = 2 * Math.PI * r;
+    const r = 88, cx = 120, cy = 120, circ = 2 * Math.PI * r;
     const dashOffset = circ * (1 - pct);
 
     return (
@@ -4411,67 +5843,77 @@ function MobilityScreen({ theme, state, setState, onClose }) {
           <Heading theme={theme} size="lg" style={{ color: theme.text }}>{routine.name}</Heading>
         </div>
 
-        {/* Aktuelle Übung */}
-        <div style={{ padding: '0 22px' }}>
-          <div style={{
-            padding: 18, borderRadius: theme.radiusLg,
-            background: theme.surface, border: `1px solid ${theme.borderStrong}`,
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <div style={{ fontSize: 19, fontWeight: 800, textAlign: 'center' }}>{ex.name}</div>
-              {sideLabel && <Pill theme={theme} color={theme.accent2}>{sideLabel}</Pill>}
-            </div>
-
-            {ex.dur ? (
-              <div style={{ position: 'relative', width: 240, height: 240 }}>
-                <svg width="240" height="240" viewBox="0 0 240 240">
-                  <circle cx={cx} cy={cy} r={r} fill="none" stroke={theme.surface2} strokeWidth="12" />
-                  <circle cx={cx} cy={cy} r={r} fill="none"
-                    stroke={overdue ? theme.success : theme.accent} strokeWidth="12"
-                    strokeLinecap="round" strokeDasharray={circ}
-                    strokeDashoffset={dashOffset}
-                    transform={`rotate(-90 ${cx} ${cy})`}
-                    style={{ transition: 'stroke-dashoffset .3s linear, stroke .3s' }} />
-                </svg>
-                <div style={{
-                  position: 'absolute', inset: 0, display: 'flex',
-                  flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <div style={{
-                    fontSize: 56, fontWeight: 800, fontFamily: theme.fontDisplay,
-                    color: overdue ? theme.success : theme.text,
-                    fontVariantNumeric: 'tabular-nums', letterSpacing: -1,
-                  }}>
-                    {overdue ? 'FERTIG' : FT.fmtTime(remaining)}
-                  </div>
-                  {!overdue && (
-                    <div style={{ fontSize: 11, color: theme.muted, fontFamily: theme.fontMono, marginTop: -2 }}>
-                      von {FT.fmtTime(ex.dur)}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div style={{
-                fontSize: 48, fontWeight: 800, fontFamily: theme.fontDisplay,
-                color: theme.text, padding: '20px 0',
-              }}>
-                {ex.reps} <span style={{ fontSize: 18, color: theme.muted, fontFamily: theme.fontUI }}>Wdh</span>
-              </div>
-            )}
-
-            <div style={{ fontSize: 13, color: theme.mutedStrong, lineHeight: 1.6, textAlign: 'center' }}>
-              {ex.desc}
-            </div>
+        {/* Pose + Name + Side */}
+        <div style={{ padding: '0 22px 14px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          <MobilityPose theme={theme} pose={ex.pose} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div style={{ fontSize: 19, fontWeight: 800, textAlign: 'center' }}>{ex.name}</div>
+            {sideLabel && <Pill theme={theme} color={theme.accent2}>{sideLabel}</Pill>}
           </div>
         </div>
 
+        {/* Timer oder Reps */}
+        <div style={{ padding: '0 22px 16px', display: 'flex', justifyContent: 'center' }}>
+          {ex.dur ? (
+            <div style={{ position: 'relative', width: 240, height: 240 }}>
+              <svg width="240" height="240" viewBox="0 0 240 240">
+                <circle cx={cx} cy={cy} r={r} fill="none" stroke={theme.surface2} strokeWidth="12" />
+                <circle cx={cx} cy={cy} r={r} fill="none"
+                  stroke={overdue ? theme.success : theme.accent} strokeWidth="12"
+                  strokeLinecap="round" strokeDasharray={circ}
+                  strokeDashoffset={dashOffset}
+                  transform={`rotate(-90 ${cx} ${cy})`}
+                  style={{ transition: 'stroke-dashoffset .3s linear, stroke .3s' }} />
+              </svg>
+              <div style={{
+                position: 'absolute', inset: 0, display: 'flex',
+                flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <div style={{
+                  fontSize: 48, fontWeight: 800, fontFamily: theme.fontDisplay,
+                  color: overdue ? theme.success : theme.text,
+                  fontVariantNumeric: 'tabular-nums', letterSpacing: -1,
+                }}>
+                  {overdue ? 'FERTIG' : FT.fmtTime(remaining)}
+                </div>
+                {!overdue && (
+                  <div style={{ fontSize: 11, color: theme.muted, fontFamily: theme.fontMono, marginTop: -2 }}>
+                    von {FT.fmtTime(ex.dur)}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div style={{
+              fontSize: 56, fontWeight: 800, fontFamily: theme.fontDisplay,
+              color: theme.text, padding: '20px 0',
+            }}>
+              {ex.reps} <span style={{ fontSize: 18, color: theme.muted, fontFamily: theme.fontUI }}>Wdh</span>
+            </div>
+          )}
+        </div>
+
+        {/* Anleitung (aufklappbar) */}
+        <div style={{ padding: '0 22px 14px' }}>
+          <MobilityInstructions theme={theme} ex={ex} open={showInfo} onToggle={() => setShowInfo(v => !v)} />
+        </div>
+
         {/* Steuerung */}
-        <div style={{ padding: '14px 22px 20px' }}>
-          <Btn theme={theme} kind="primary" full onClick={next}>
-            {stepIdx + 1 < exs.length ? 'Weiter →' : '✓ Fertig'}
-          </Btn>
+        <div style={{ padding: '0 22px 12px', display: 'flex', gap: 10 }}>
+          <button onClick={prev} disabled={stepIdx === 0} style={{
+            flex: '0 0 auto', minWidth: 44, padding: '14px 10px',
+            borderRadius: theme.radius,
+            background: theme.surface2, border: `1px solid ${theme.border}`,
+            color: stepIdx === 0 ? theme.muted : theme.text,
+            opacity: stepIdx === 0 ? 0.4 : 1,
+            cursor: stepIdx === 0 ? 'not-allowed' : 'pointer',
+            fontFamily: 'inherit', fontSize: 16, fontWeight: 700,
+          }}>←</button>
+          <div style={{ flex: 1 }}>
+            <Btn theme={theme} kind="primary" full onClick={next}>
+              {stepIdx + 1 < exs.length ? 'Weiter →' : '✓ Fertig'}
+            </Btn>
+          </div>
         </div>
 
         {/* Nächste Übung Vorschau */}
