@@ -7,12 +7,15 @@
 
 const { useState: useStateRT, useEffect: useEffectRT, useRef: useRefRT } = React;
 
+const VIDEO_SUPPORTED_REST = ['squat', 'bench', 'deadlift'];
+
 // ─────────────────────────────────────────────────────────────
 // REST TIMER OVERLAY — pause + inline data entry
 // ─────────────────────────────────────────────────────────────
-function RestTimerOverlay({ theme, state, exercise, setIdx, weight, set, nextLabel, duration, onUpdateSet, onClose, onOpenPlates }) {
+function RestTimerOverlay({ theme, state, setState, exercise, setIdx, weight, set, nextLabel, duration, onUpdateSet, onClose, onOpenPlates }) {
   const [extra, setExtra] = useStateRT(0);
   const [now, setNow] = useStateRT(Date.now());
+  const [videoOpen, setVideoOpen] = useStateRT(false);
   const startedRef = useRefRT(Date.now());
   const bellPlayedRef = useRefRT(false);
 
@@ -184,6 +187,24 @@ function RestTimerOverlay({ theme, state, exercise, setIdx, weight, set, nextLab
         </div>
       </div>
 
+      {/* Video-Analyse Quick-Action (nur bei unterstützten Übungen) */}
+      {VIDEO_SUPPORTED_REST.includes(exercise.id) && setState && (
+        <div style={{ padding: '0 22px 10px' }}>
+          <button onClick={() => setVideoOpen(true)} style={{
+            width: '100%', padding: '12px 14px', borderRadius: theme.radius,
+            background: theme.surface, border: `1px solid ${theme.border}`,
+            color: theme.text, fontSize: 12, fontWeight: 700,
+            fontFamily: 'inherit', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            <span>📹 Letzten Satz analysieren</span>
+            <span style={{ color: theme.muted, fontSize: 11, fontFamily: theme.fontMono }}>
+              Winkel-Check →
+            </span>
+          </button>
+        </div>
+      )}
+
       {/* Controls + close */}
       <div style={{ padding: '0 22px', display: 'flex', gap: 8, marginBottom: 10 }}>
         <RestCtl theme={theme} onClick={() => setExtra(extra - 15)}>−15 s</RestCtl>
@@ -195,6 +216,26 @@ function RestTimerOverlay({ theme, state, exercise, setIdx, weight, set, nextLab
           {overdue ? 'Weiter →' : 'Fertig & weiter'}
         </Btn>
       </div>
+
+      {/* Inline Video-Analyse Modal (über dem Rest-Overlay) */}
+      {videoOpen && (
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 200,
+          background: theme.bg,
+          display: 'flex', flexDirection: 'column',
+          paddingTop: 20, paddingBottom: 20,
+          overflowY: 'auto',
+          animation: 'fadeIn .15s',
+        }}>
+          <VideoTab
+            theme={theme}
+            state={state}
+            setState={setState}
+            defaultExerciseId={exercise.id}
+            onClose={() => setVideoOpen(false)}
+          />
+        </div>
+      )}
     </div>
   );
 }

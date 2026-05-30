@@ -5,8 +5,9 @@ const { useState: useStateV, useEffect: useEffectV, useRef: useRefV, useMemo: us
 
 const SUPPORTED_EXERCISES = ['squat', 'bench', 'deadlift'];
 
-function VideoTab({ theme, state, setState }) {
-  const [exerciseId, setExerciseId] = useStateV('squat');
+function VideoTab({ theme, state, setState, defaultExerciseId, onClose }) {
+  const initialEx = SUPPORTED_EXERCISES.includes(defaultExerciseId) ? defaultExerciseId : 'squat';
+  const [exerciseId, setExerciseId] = useStateV(initialEx);
   const [phase, setPhase] = useStateV('idle');      // idle | analyzing | done | error
   const [progress, setProgress] = useStateV(0);
   const [statusMsg, setStatusMsg] = useStateV('');
@@ -68,6 +69,21 @@ function VideoTab({ theme, state, setState }) {
 
   return (
     <div style={{ padding: '0 22px' }}>
+      {onClose && (
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          marginBottom: 14,
+        }}>
+          <Label theme={theme} style={{ margin: 0 }}>📹 Video-Analyse</Label>
+          <button onClick={onClose} style={{
+            background: 'transparent', border: 'none', color: theme.muted,
+            fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+            fontFamily: 'inherit', padding: 0,
+          }}>
+            ✕ Schließen
+          </button>
+        </div>
+      )}
       {/* Übungsauswahl */}
       <Label theme={theme} style={{ marginBottom: 6 }}>Übung wählen</Label>
       <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>

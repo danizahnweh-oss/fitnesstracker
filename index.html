@@ -2965,6 +2965,7 @@ function WorkoutScreen({ theme, state, setState, sessionId, onExit, onComplete, 
       {restState && (
         <RestTimerOverlay theme={theme}
           state={state}
+          setState={setState}
           exercise={exercises[restState.exIdx]}
           setIdx={restState.setIdx}
           weight={live[restState.exIdx].weight}
@@ -3479,12 +3480,15 @@ window.ReplacePicker = ReplacePicker;
 
 const { useState: useStateRT, useEffect: useEffectRT, useRef: useRefRT } = React;
 
+const VIDEO_SUPPORTED_REST = ['squat', 'bench', 'deadlift'];
+
 // ─────────────────────────────────────────────────────────────
 // REST TIMER OVERLAY — pause + inline data entry
 // ─────────────────────────────────────────────────────────────
-function RestTimerOverlay({ theme, state, exercise, setIdx, weight, set, nextLabel, duration, onUpdateSet, onClose, onOpenPlates }) {
+function RestTimerOverlay({ theme, state, setState, exercise, setIdx, weight, set, nextLabel, duration, onUpdateSet, onClose, onOpenPlates }) {
   const [extra, setExtra] = useStateRT(0);
   const [now, setNow] = useStateRT(Date.now());
+  const [videoOpen, setVideoOpen] = useStateRT(false);
   const startedRef = useRefRT(Date.now());
   const bellPlayedRef = useRefRT(false);
 
@@ -3656,6 +3660,24 @@ function RestTimerOverlay({ theme, state, exercise, setIdx, weight, set, nextLab
         </div>
       </div>
 
+      {/* Video-Analyse Quick-Action (nur bei unterstützten Übungen) */}
+      {VIDEO_SUPPORTED_REST.includes(exercise.id) && setState && (
+        <div style={{ padding: '0 22px 10px' }}>
+          <button onClick={() => setVideoOpen(true)} style={{
+            width: '100%', padding: '12px 14px', borderRadius: theme.radius,
+            background: theme.surface, border: `1px solid ${theme.border}`,
+            color: theme.text, fontSize: 12, fontWeight: 700,
+            fontFamily: 'inherit', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            <span>📹 Letzten Satz analysieren</span>
+            <span style={{ color: theme.muted, fontSize: 11, fontFamily: theme.fontMono }}>
+              Winkel-Check →
+            </span>
+          </button>
+        </div>
+      )}
+
       {/* Controls + close */}
       <div style={{ padding: '0 22px', display: 'flex', gap: 8, marginBottom: 10 }}>
         <RestCtl theme={theme} onClick={() => setExtra(extra - 15)}>−15 s</RestCtl>
@@ -3667,6 +3689,26 @@ function RestTimerOverlay({ theme, state, exercise, setIdx, weight, set, nextLab
           {overdue ? 'Weiter →' : 'Fertig & weiter'}
         </Btn>
       </div>
+
+      {/* Inline Video-Analyse Modal (über dem Rest-Overlay) */}
+      {videoOpen && (
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 200,
+          background: theme.bg,
+          display: 'flex', flexDirection: 'column',
+          paddingTop: 20, paddingBottom: 20,
+          overflowY: 'auto',
+          animation: 'fadeIn .15s',
+        }}>
+          <VideoTab
+            theme={theme}
+            state={state}
+            setState={setState}
+            defaultExerciseId={exercise.id}
+            onClose={() => setVideoOpen(false)}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -4666,8 +4708,9 @@ const { useState: useStateV, useEffect: useEffectV, useRef: useRefV, useMemo: us
 
 const SUPPORTED_EXERCISES = ['squat', 'bench', 'deadlift'];
 
-function VideoTab({ theme, state, setState }) {
-  const [exerciseId, setExerciseId] = useStateV('squat');
+function VideoTab({ theme, state, setState, defaultExerciseId, onClose }) {
+  const initialEx = SUPPORTED_EXERCISES.includes(defaultExerciseId) ? defaultExerciseId : 'squat';
+  const [exerciseId, setExerciseId] = useStateV(initialEx);
   const [phase, setPhase] = useStateV('idle');      // idle | analyzing | done | error
   const [progress, setProgress] = useStateV(0);
   const [statusMsg, setStatusMsg] = useStateV('');
@@ -4729,6 +4772,21 @@ function VideoTab({ theme, state, setState }) {
 
   return (
     <div style={{ padding: '0 22px' }}>
+      {onClose && (
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          marginBottom: 14,
+        }}>
+          <Label theme={theme} style={{ margin: 0 }}>📹 Video-Analyse</Label>
+          <button onClick={onClose} style={{
+            background: 'transparent', border: 'none', color: theme.muted,
+            fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+            fontFamily: 'inherit', padding: 0,
+          }}>
+            ✕ Schließen
+          </button>
+        </div>
+      )}
       {/* Übungsauswahl */}
       <Label theme={theme} style={{ marginBottom: 6 }}>Übung wählen</Label>
       <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
@@ -5623,17 +5681,37 @@ const POSES = {
 };
 
 function MobilityPose({ theme, pose }) {
+  // Bild laden wenn vorhanden, sonst auf die SVG-Skizze zurückfallen
+  const [imgFailed, setImgFailed] = useStateMob(false);
+  useEffectMob(() => { setImgFailed(false); }, [pose]);
+
   const renderer = POSES[pose];
+  const showImage = pose && !imgFailed;
+
   return (
     <div style={{
-      width: '100%', maxWidth: 240, aspectRatio: '1 / 1',
-      background: theme.surface2,
+      width: '100%', maxWidth: 260, aspectRatio: '1 / 1',
+      background: '#F2EAD8', // Papier-Hintergrund matcht die Bilder
       borderRadius: theme.radiusLg,
       border: `1px solid ${theme.border}`,
-      padding: 14, boxSizing: 'border-box',
+      overflow: 'hidden', boxSizing: 'border-box',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      position: 'relative',
     }}>
-      {renderer ? renderer(theme) : (
-        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.muted, fontSize: 32 }}>🧘</div>
+      {showImage && (
+        <img
+          src={`poses/${pose}.jpg`}
+          alt=""
+          onError={() => setImgFailed(true)}
+          style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+        />
+      )}
+      {!showImage && (
+        <div style={{ width: '100%', height: '100%', padding: 14, boxSizing: 'border-box', background: theme.surface2 }}>
+          {renderer ? renderer(theme) : (
+            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.muted, fontSize: 32 }}>🧘</div>
+          )}
+        </div>
       )}
     </div>
   );

@@ -295,17 +295,37 @@ const POSES = {
 };
 
 function MobilityPose({ theme, pose }) {
+  // Bild laden wenn vorhanden, sonst auf die SVG-Skizze zurückfallen
+  const [imgFailed, setImgFailed] = useStateMob(false);
+  useEffectMob(() => { setImgFailed(false); }, [pose]);
+
   const renderer = POSES[pose];
+  const showImage = pose && !imgFailed;
+
   return (
     <div style={{
-      width: '100%', maxWidth: 240, aspectRatio: '1 / 1',
-      background: theme.surface2,
+      width: '100%', maxWidth: 260, aspectRatio: '1 / 1',
+      background: '#F2EAD8', // Papier-Hintergrund matcht die Bilder
       borderRadius: theme.radiusLg,
       border: `1px solid ${theme.border}`,
-      padding: 14, boxSizing: 'border-box',
+      overflow: 'hidden', boxSizing: 'border-box',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      position: 'relative',
     }}>
-      {renderer ? renderer(theme) : (
-        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.muted, fontSize: 32 }}>🧘</div>
+      {showImage && (
+        <img
+          src={`poses/${pose}.jpg`}
+          alt=""
+          onError={() => setImgFailed(true)}
+          style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+        />
+      )}
+      {!showImage && (
+        <div style={{ width: '100%', height: '100%', padding: 14, boxSizing: 'border-box', background: theme.surface2 }}>
+          {renderer ? renderer(theme) : (
+            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.muted, fontSize: 32 }}>🧘</div>
+          )}
+        </div>
       )}
     </div>
   );

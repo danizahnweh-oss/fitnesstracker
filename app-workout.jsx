@@ -192,6 +192,7 @@ function WorkoutScreen({ theme, state, setState, sessionId, onExit, onComplete, 
       {restState && (
         <RestTimerOverlay theme={theme}
           state={state}
+          setState={setState}
           exercise={exercises[restState.exIdx]}
           setIdx={restState.setIdx}
           weight={live[restState.exIdx].weight}
