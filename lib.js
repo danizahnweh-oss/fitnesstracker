@@ -130,7 +130,7 @@ const MOBILITY_ROUTINES = {
     est: 9,
     exercises: [
       {
-        id: 'hip_90_90', name: '90/90 Hüftwechsel', side: 'both', pose: 'seated_90_90', dur: 60,
+        id: 'hip_90_90', name: '90/90 Hüftwechsel', side: 'both', pose: 'hip_90_90', dur: 60,
         setup: 'Aufrecht auf dem Boden sitzen: vorderes Bein 90° vor dir, hinteres Bein 90° zur Seite. Beide Knie und Knöchel berühren möglichst den Boden.',
         steps: [
           'Brustbein hoch, Rücken lang — keine Rundung.',
@@ -194,7 +194,7 @@ const MOBILITY_ROUTINES = {
         ],
       },
       {
-        id: 'fire_hydrant', name: 'Fire Hydrants', side: 'both', pose: 'quadruped', reps: 10,
+        id: 'fire_hydrant', name: 'Fire Hydrants', side: 'both', pose: 'fire_hydrant', reps: 10,
         setup: 'Im Vierfüßler: Hände unter Schultern, Knie unter Hüfte. Rücken neutral, Bauch leicht angespannt.',
         steps: [
           'Ein Knie kontrolliert seitlich nach oben heben — Winkel im Knie bleibt bei 90°.',
@@ -250,7 +250,7 @@ const MOBILITY_ROUTINES = {
         ],
       },
       {
-        id: 'band_dislocate', name: 'Band Pass-Throughs', side: 'both', pose: 'band_overhead', reps: 12,
+        id: 'band_dislocate', name: 'Band Pass-Throughs', side: 'both', pose: 'band_dislocate', reps: 12,
         setup: 'Theraband oder Besenstil sehr weit greifen — breiter als Schulterbreite. Aufrecht stehen.',
         steps: [
           'Mit gestreckten Armen das Band/den Stab nach vorn halten.',
@@ -282,7 +282,7 @@ const MOBILITY_ROUTINES = {
         ],
       },
       {
-        id: 'thread_needle', name: 'Thread the Needle', side: 'both', pose: 'quadruped', dur: 40,
+        id: 'thread_needle', name: 'Thread the Needle', side: 'both', pose: 'thread_needle', dur: 40,
         setup: 'Im Vierfüßler starten. Hände unter Schultern, Knie unter Hüfte.',
         steps: [
           'Rechten Arm gestreckt unter dem Körper hindurch nach links führen.',
@@ -306,7 +306,7 @@ const MOBILITY_ROUTINES = {
     est: 8,
     exercises: [
       {
-        id: 'open_book_l', name: 'Open Book (links)', side: 'left', pose: 'side_lying', reps: 8,
+        id: 'open_book_l', name: 'Open Book (links)', side: 'left', pose: 'open_book', reps: 8,
         setup: 'Rechte Seitlage. Knie 90° gebeugt aufeinander, beide Arme nach vorn ausgestreckt auf Schulterhöhe.',
         steps: [
           'Linken Arm wie ein Buchdeckel öffnen — Richtung Boden hinter dir.',
@@ -322,7 +322,7 @@ const MOBILITY_ROUTINES = {
         ],
       },
       {
-        id: 'open_book_r', name: 'Open Book (rechts)', side: 'right', pose: 'side_lying', reps: 8,
+        id: 'open_book_r', name: 'Open Book (rechts)', side: 'right', pose: 'open_book', reps: 8,
         setup: 'Linke Seitlage. Knie 90° gebeugt aufeinander, beide Arme nach vorn ausgestreckt auf Schulterhöhe.',
         steps: [
           'Rechten Arm wie ein Buchdeckel öffnen — Richtung Boden hinter dir.',
@@ -338,7 +338,7 @@ const MOBILITY_ROUTINES = {
         ],
       },
       {
-        id: 'cat_cow', name: 'Katze-Kuh', side: 'both', pose: 'quadruped', dur: 60,
+        id: 'cat_cow', name: 'Katze-Kuh', side: 'both', pose: 'cat_cow', dur: 60,
         setup: 'Vierfüßler — Hände unter Schultern, Knie unter Hüfte. Wirbelsäule neutral.',
         steps: [
           'EINATMEN: Brust raus, Steißbein hoch, Bauch fällt Richtung Boden (Kuh).',
@@ -354,7 +354,7 @@ const MOBILITY_ROUTINES = {
         ],
       },
       {
-        id: 'tspine_ext', name: 'BWS-Extension (Rolle)', side: 'both', pose: 'tspine_roller', dur: 45,
+        id: 'tspine_ext', name: 'BWS-Extension (Rolle)', side: 'both', pose: 'tspine_ext', dur: 45,
         setup: 'Foam Roller quer unter der oberen Brustwirbelsäule. Hände hinterm Kopf, Ellenbogen vor dem Gesicht, Füße aufgestellt.',
         steps: [
           'Po bleibt am Boden, Bauch leicht aktiv.',
@@ -370,7 +370,7 @@ const MOBILITY_ROUTINES = {
         ],
       },
       {
-        id: 'quadruped_rot', name: 'Quadruped Rotation', side: 'both', pose: 'quadruped', reps: 8,
+        id: 'quadruped_rot', name: 'Quadruped Rotation', side: 'both', pose: 'quadruped_rot', reps: 8,
         setup: 'Vierfüßler. Rechte Hand an den Hinterkopf, Ellenbogen zeigt nach unten.',
         steps: [
           'Rechten Ellenbogen langsam zur Decke öffnen — Rotation aus der BWS.',
@@ -442,7 +442,7 @@ const MOBILITY_ROUTINES = {
         ],
       },
       {
-        id: 'ankle_circles', name: 'Fußkreisen', side: 'both', pose: 'ankle_circle', dur: 40,
+        id: 'ankle_circles', name: 'Fußkreisen', side: 'both', pose: 'ankle_circles', dur: 40,
         setup: 'Sitzend oder stehend, ein Bein leicht angehoben.',
         steps: [
           'Langsame, große Kreise mit dem Fuß zeichnen.',
@@ -466,7 +466,7 @@ const MOBILITY_ROUTINES = {
     est: 11,
     exercises: [
       {
-        id: 'fb_cat_cow', name: 'Katze-Kuh', side: 'both', pose: 'quadruped', dur: 45,
+        id: 'fb_cat_cow', name: 'Katze-Kuh', side: 'both', pose: 'cat_cow', dur: 45,
         setup: 'Vierfüßler — Hände unter Schultern, Knie unter Hüfte.',
         steps: [
           'EINATMEN: Brust raus, Steißbein hoch (Kuh).',
@@ -527,7 +527,7 @@ const MOBILITY_ROUTINES = {
         ],
       },
       {
-        id: 'fb_band_dislocate', name: 'Band Pass-Throughs', side: 'both', pose: 'band_overhead', reps: 12,
+        id: 'fb_band_dislocate', name: 'Band Pass-Throughs', side: 'both', pose: 'band_dislocate', reps: 12,
         setup: 'Band oder Stab weit greifen, aufrecht stehen.',
         steps: [
           'Gestreckte Arme von vorn über den Kopf nach hinten führen.',
@@ -541,7 +541,7 @@ const MOBILITY_ROUTINES = {
         ],
       },
       {
-        id: 'fb_hip_90_90', name: '90/90 Hüftwechsel', side: 'both', pose: 'seated_90_90', dur: 60,
+        id: 'fb_hip_90_90', name: '90/90 Hüftwechsel', side: 'both', pose: 'hip_90_90', dur: 60,
         setup: 'Auf dem Boden sitzen, beide Beine 90/90.',
         steps: [
           'Kontrolliert zur anderen Seite wechseln.',
