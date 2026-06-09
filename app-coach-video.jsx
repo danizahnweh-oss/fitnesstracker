@@ -13,7 +13,8 @@ function VideoTab({ theme, state, setState, defaultExerciseId, onClose }) {
   const [statusMsg, setStatusMsg] = useStateV('');
   const [error, setError] = useStateV('');
   const [result, setResult] = useStateV(null);
-  const fileRef = useRefV(null);
+  const fileRef = useRefV(null);      // Kamera (direkt aufnehmen)
+  const galleryRef = useRefV(null);   // Galerie / vorhandene Datei
 
   // Gespeicherten Report für aktuelle Übung laden, wenn nichts in der Session läuft
   const storedReport = useMemoV(
@@ -112,11 +113,20 @@ function VideoTab({ theme, state, setState, defaultExerciseId, onClose }) {
           Die Analyse läuft komplett auf deinem Gerät.
         </div>
         <div style={{ height: 14 }} />
+        {/* Kamera-Aufnahme: capture öffnet auf dem Handy direkt die Kamera */}
         <input
           ref={fileRef}
           type="file"
           accept="video/*"
           capture="environment"
+          onChange={onFileChosen}
+          style={{ display: 'none' }}
+        />
+        {/* Galerie-Upload: ohne capture → vorhandenes Video vom Handy wählen */}
+        <input
+          ref={galleryRef}
+          type="file"
+          accept="video/*"
           onChange={onFileChosen}
           style={{ display: 'none' }}
         />
@@ -129,7 +139,17 @@ function VideoTab({ theme, state, setState, defaultExerciseId, onClose }) {
         >
           {phase === 'analyzing'
             ? '⏳ Analysiere …'
-            : (result ? '📹 Neues Video analysieren' : '📹 Video auswählen')}
+            : (result ? '📹 Neues Video aufnehmen' : '📹 Video aufnehmen')}
+        </Btn>
+        <div style={{ height: 8 }} />
+        <Btn
+          theme={theme}
+          kind="secondary"
+          full
+          onClick={() => galleryRef.current?.click()}
+          disabled={phase === 'analyzing'}
+        >
+          ⬆️ Aus Galerie hochladen
         </Btn>
 
         {phase === 'analyzing' && (

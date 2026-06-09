@@ -732,36 +732,44 @@ function getAC() {
   return _ac;
 }
 
+// Build the bell sound at an absolute AudioContext time `start`.
+// Returns the oscillators so a scheduled sound can later be cancelled.
+function _bellAt(ctx, start) {
+  const osc = [];
+  // 3 quick strikes of the bell — boxing round ending
+  [0, 0.18, 0.36].forEach((delay) => {
+    // Bell = inharmonic stack
+    const partials = [
+      { f: 920,  g: 0.45, t: 'triangle' },
+      { f: 1380, g: 0.30, t: 'sine'     },
+      { f: 2300, g: 0.18, t: 'sine'     },
+      { f: 3300, g: 0.10, t: 'sine'     },
+    ];
+    const masterGain = ctx.createGain();
+    masterGain.connect(ctx.destination);
+    masterGain.gain.setValueAtTime(0.0001, start + delay);
+    masterGain.gain.exponentialRampToValueAtTime(1.0, start + delay + 0.005);
+    masterGain.gain.exponentialRampToValueAtTime(0.001, start + delay + 1.3);
+
+    partials.forEach(p => {
+      const o = ctx.createOscillator();
+      o.type = p.t; o.frequency.value = p.f;
+      const g = ctx.createGain();
+      g.gain.value = p.g;
+      o.connect(g); g.connect(masterGain);
+      o.start(start + delay);
+      o.stop(start + delay + 1.4);
+      osc.push(o);
+    });
+  });
+  return osc;
+}
+
 function playBell(enabled = true) {
   if (!enabled) return;
   try {
     const ctx = getAC();
-    const now = ctx.currentTime;
-    // 3 quick strikes of the bell — boxing round ending
-    [0, 0.18, 0.36].forEach((delay) => {
-      // Bell = inharmonic stack
-      const partials = [
-        { f: 920,  g: 0.45, t: 'triangle' },
-        { f: 1380, g: 0.30, t: 'sine'     },
-        { f: 2300, g: 0.18, t: 'sine'     },
-        { f: 3300, g: 0.10, t: 'sine'     },
-      ];
-      const masterGain = ctx.createGain();
-      masterGain.connect(ctx.destination);
-      masterGain.gain.setValueAtTime(0.0001, now + delay);
-      masterGain.gain.exponentialRampToValueAtTime(1.0, now + delay + 0.005);
-      masterGain.gain.exponentialRampToValueAtTime(0.001, now + delay + 1.3);
-
-      partials.forEach(p => {
-        const o = ctx.createOscillator();
-        o.type = p.t; o.frequency.value = p.f;
-        const g = ctx.createGain();
-        g.gain.value = p.g;
-        o.connect(g); g.connect(masterGain);
-        o.start(now + delay);
-        o.stop(now + delay + 1.4);
-      });
-    });
+    _bellAt(ctx, ctx.currentTime);
   } catch (e) { console.warn('bell failed', e); }
 }
 
@@ -1085,36 +1093,75 @@ function generateWarmupsBy(style, ex, workWeight) {
 // ─────────────────────────────────────────────────────────────
 // SOUND VARIANTS
 // ─────────────────────────────────────────────────────────────
+function _dingAt(ctx, start) {
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = 'sine'; o.frequency.value = 1480;
+  o.connect(g); g.connect(ctx.destination);
+  g.gain.setValueAtTime(0.0001, start);
+  g.gain.exponentialRampToValueAtTime(0.4, start + 0.005);
+  g.gain.exponentialRampToValueAtTime(0.001, start + 1.6);
+  o.start(start); o.stop(start + 1.7);
+  return [o];
+}
+
 function playDing() {
-  try {
-    const ctx = getAC();
-    const t = ctx.currentTime;
+  try { const ctx = getAC(); _dingAt(ctx, ctx.currentTime); } catch {}
+}
+
+function _beepAt(ctx, start) {
+  const osc = [];
+  [0, 0.18].forEach((d) => {
     const o = ctx.createOscillator();
     const g = ctx.createGain();
-    o.type = 'sine'; o.frequency.value = 1480;
+    o.type = 'square'; o.frequency.value = 1000;
     o.connect(g); g.connect(ctx.destination);
+    const t = start + d;
     g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.4, t + 0.005);
-    g.gain.exponentialRampToValueAtTime(0.001, t + 1.6);
-    o.start(t); o.stop(t + 1.7);
-  } catch {}
+    g.gain.exponentialRampToValueAtTime(0.25, t + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    o.start(t); o.stop(t + 0.2);
+    osc.push(o);
+  });
+  return osc;
 }
 
 function playBeep() {
+  try { const ctx = getAC(); _beepAt(ctx, ctx.currentTime); } catch {}
+}
+
+// ─────────────────────────────────────────────────────────────
+// PRE-SCHEDULED END-OF-REST SOUND (background-resilient)
+// ─────────────────────────────────────────────────────────────
+// Queue the rest-end sound `delaySeconds` into the future on the Web Audio
+// render thread. That thread keeps running even when the page's JS timers are
+// throttled — i.e. when the app is backgrounded or the phone screen is locked
+// during a pause. Returns a handle whose cancel() stops the queued sound (used
+// when the user skips, adjusts, or closes the timer early).
+//
+// Limits worth knowing: this cannot fire if the browser process is fully
+// closed (no code runs at all), and iOS Safari suspends the AudioContext when
+// backgrounded — so it is best effort within what the web platform allows.
+function scheduleSound(kind, settings, delaySeconds) {
+  const noop = { cancel() {} };
+  if (!settings || !settings.soundEnabled) return noop;
+  if (kind === 'silent' || kind === 'none') return noop;
   try {
     const ctx = getAC();
-    [0, 0.18].forEach((d) => {
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type = 'square'; o.frequency.value = 1000;
-      o.connect(g); g.connect(ctx.destination);
-      const t = ctx.currentTime + d;
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.25, t + 0.005);
-      g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
-      o.start(t); o.stop(t + 0.2);
-    });
-  } catch {}
+    const start = ctx.currentTime + Math.max(0, delaySeconds || 0);
+    let osc;
+    if (kind === 'ding') osc = _dingAt(ctx, start);
+    else if (kind === 'beep') osc = _beepAt(ctx, start);
+    else osc = _bellAt(ctx, start);
+    return {
+      cancel() {
+        osc.forEach(o => {
+          try { o.stop(); } catch {}
+          try { o.disconnect(); } catch {}
+        });
+      },
+    };
+  } catch { return noop; }
 }
 
 function playSound(kind, settings) {
@@ -1514,7 +1561,7 @@ window.FT = {
   suggestNextWeight, findLastSession, findLastForExercise, exerciseHistory,
   estimate1RM, bestEstimate1RM, generateWarmups, generateWarmupsWendler, generateWarmupsBy,
   roundToPlate, calcPlates,
-  playBell, playDing, playBeep, playClick, playSound,
+  playBell, playDing, playBeep, playClick, playSound, scheduleSound,
   fmtTime, todayISO, fmtDate, daysAgo, fmtWeight,
   suggestSessionToday, rpeCeiling,
   // new

@@ -18,6 +18,7 @@ function RestTimerOverlay({ theme, state, setState, exercise, setIdx, weight, se
   const [videoOpen, setVideoOpen] = useStateRT(false);
   const startedRef = useRefRT(Date.now());
   const bellPlayedRef = useRefRT(false);
+  const scheduledRef = useRefRT(null);
 
   useEffectRT(() => {
     const id = setInterval(() => setNow(Date.now()), 100);
@@ -29,12 +30,42 @@ function RestTimerOverlay({ theme, state, setState, exercise, setIdx, weight, se
   const remaining = Math.max(0, total - elapsed);
   const pct = Math.max(0, Math.min(1, elapsed / total));
 
+  // Pre-schedule the end-of-rest sound on the audio thread so it still rings
+  // when the app is backgrounded / the phone is locked during the pause.
+  // Re-runs (and reschedules) whenever the total changes (−15 s / +30 s).
+  useEffectRT(() => {
+    if (bellPlayedRef.current) return;
+    const remainingNow = Math.max(0, total - (Date.now() - startedRef.current) / 1000);
+    scheduledRef.current = FT.scheduleSound(state.settings.soundKind, state.settings, remainingNow);
+    return () => {
+      scheduledRef.current?.cancel();
+      scheduledRef.current = null;
+    };
+  }, [total, state.settings.soundKind, state.settings.soundEnabled]);
+
+  // Foreground-only feedback at the end: vibration + "GO!" state. The audible
+  // bell itself is handled by the pre-scheduled sound above (avoids a double
+  // ring when the tab is in the foreground).
   useEffectRT(() => {
     if (remaining <= 0 && !bellPlayedRef.current) {
       bellPlayedRef.current = true;
-      FT.playSound(state.settings.soundKind, state.settings);
+      if (state.settings.vibrationEnabled && navigator.vibrate) {
+        navigator.vibrate([200, 100, 200, 100, 400]);
+      }
     }
   }, [remaining, state.settings]);
+
+  function skipRest() {
+    // Cancel the queued sound and ring immediately instead.
+    scheduledRef.current?.cancel();
+    scheduledRef.current = null;
+    if (!bellPlayedRef.current) {
+      bellPlayedRef.current = true;
+      FT.playSound(state.settings.soundKind, state.settings);
+    }
+    startedRef.current = Date.now() - total * 1000;
+    setNow(Date.now());
+  }
 
   const r = 100, cx = 120, cy = 120, circ = 2 * Math.PI * r;
   const dashOffset = circ * (1 - pct);
@@ -176,7 +207,8 @@ function RestTimerOverlay({ theme, state, setState, exercise, setIdx, weight, se
           </div>
 
           {/* Note */}
-          <input value={set.note || ''} onChange={e => onUpdateSet({ note: e.target.value })}
+          <Label theme={theme} htmlFor="rest-set-note" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>Satznotiz</Label>
+          <input id="rest-set-note" name="restSetNote" value={set.note || ''} onChange={e => onUpdateSet({ note: e.target.value })}
             placeholder="Notiz (optional)"
             style={{
               width: '100%', boxSizing: 'border-box',
@@ -209,7 +241,7 @@ function RestTimerOverlay({ theme, state, setState, exercise, setIdx, weight, se
       <div style={{ padding: '0 22px', display: 'flex', gap: 8, marginBottom: 10 }}>
         <RestCtl theme={theme} onClick={() => setExtra(extra - 15)}>−15 s</RestCtl>
         <RestCtl theme={theme} onClick={() => setExtra(extra + 30)}>+30 s</RestCtl>
-        <RestCtl theme={theme} onClick={() => { startedRef.current = Date.now() - total * 1000; bellPlayedRef.current = true; }}>Skip</RestCtl>
+        <RestCtl theme={theme} onClick={skipRest}>Skip</RestCtl>
       </div>
       <div style={{ padding: '0 22px' }}>
         <Btn theme={theme} kind={overdue ? 'primary' : 'secondary'} full onClick={onClose}>
