@@ -1,5 +1,5 @@
 /* global React, FT */
-// app-workout-card.jsx — ExerciseCard + SetRow + ReplacePicker
+// app-workout-card.jsx - ExerciseCard + SetRow + ReplacePicker
 //
 // Used by WorkoutScreen (app-workout.jsx). Manages the per-exercise UI:
 // collapsed list row → active expanded "ready" state with weight adjust,
@@ -7,7 +7,7 @@
 // current set.
 
 // ─────────────────────────────────────────────────────────────
-// CUES BLOCK — aufklappbare Technik-Hinweise (Setup, Cues, Fehler)
+// CUES BLOCK - aufklappbare Technik-Hinweise (Setup, Cues, Fehler)
 // ─────────────────────────────────────────────────────────────
 function CuesBlock({ theme, cues, open, onToggle }) {
   if (!cues) return null;
@@ -48,7 +48,7 @@ function CuesBlock({ theme, cues, open, onToggle }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// EXERCISE CARD — collapsed list, active = expanded ready-state
+// EXERCISE CARD - collapsed list, active = expanded ready-state
 // ─────────────────────────────────────────────────────────────
 function ExerciseCard({ theme, state, ex, live, active, done, warmupStyle, onTap, onStartSet, onAdjustWeight, onOpenPlates, onReplace }) {
   const last = FT.findLastForExercise(state, ex.id);
@@ -63,16 +63,22 @@ function ExerciseCard({ theme, state, ex, live, active, done, warmupStyle, onTap
 
   return (
     <div style={{
-      background: theme.surface,
+      // Active card is marked via stronger hairline + a faint gold lift, NOT a
+      // second ember surface — ember stays exclusive to the "Satz fertig" button.
+      background: active ? theme.surface2 : theme.surface,
       borderRadius: theme.radiusLg,
-      border: `1px solid ${active ? theme.borderStrong : theme.border}`,
-      boxShadow: active ? `0 0 0 1px ${theme.accent}30, ${theme.cardShadow}` : theme.cardShadow,
-      transition: 'box-shadow .2s, border-color .2s',
+      borderTop: `1px solid ${active ? theme.accent2 + '40' : theme.borderStrong}`,
+      borderRight: `1px solid ${active ? theme.borderStrong : theme.border}`,
+      borderBottom: `1px solid ${active ? theme.borderStrong : theme.border}`,
+      borderLeft: `1px solid ${active ? theme.borderStrong : theme.border}`,
+      boxShadow: theme.cardShadow,
+      transition: 'box-shadow .2s, border-color .2s, background .2s',
       overflow: 'hidden',
     }}>
-      <div onClick={onTap} style={{
-        padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12,
-        cursor: 'pointer',
+      <button type="button" onClick={onTap} aria-expanded={active} style={{
+        width: '100%', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12,
+        cursor: 'pointer', background: 'transparent', border: 'none',
+        color: 'inherit', font: 'inherit', textAlign: 'left',
       }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -85,9 +91,21 @@ function ExerciseCard({ theme, state, ex, live, active, done, warmupStyle, onTap
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5"><path d="M20 6L9 17l-5-5"/></svg>
               </div>
             )}
-            <div style={{ fontSize: 16, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {ex.name}{ex.custom && <span style={{ color: theme.accent2, marginLeft: 6, fontSize: 11 }}>custom</span>}
+            <div style={{
+              fontSize: 16, fontWeight: 700, minWidth: 0,
+              display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}>
+              {ex.name}
             </div>
+            {ex.custom && (
+              <span style={{
+                flexShrink: 0, color: theme.accent2, fontSize: 9, fontWeight: 700,
+                fontFamily: theme.fontMono, letterSpacing: 0.5, textTransform: 'uppercase',
+                padding: '2px 6px', borderRadius: theme.radius,
+                border: `1px solid ${theme.accent2}40`, background: theme.accent2 + '12',
+              }}>custom</span>
+            )}
           </div>
           <div style={{ fontSize: 11, color: theme.muted, marginTop: 3, fontFamily: theme.fontMono }}>
             {live.sets.filter(s => s.done).length}/{ex.sets} · Wdh {ex.reps} · Pause {ex.restRange}
@@ -103,7 +121,7 @@ function ExerciseCard({ theme, state, ex, live, active, done, warmupStyle, onTap
           {change > 0 && <div style={{ fontSize: 10, color: theme.success, fontWeight: 700 }}>+{FT.fmtWeight(change)}↑</div>}
           {change < 0 && <div style={{ fontSize: 10, color: theme.danger, fontWeight: 700 }}>{FT.fmtWeight(change)}↓</div>}
         </div>
-      </div>
+      </button>
 
       {active && !done && (
         <div style={{ borderTop: `1px solid ${theme.border}`, padding: '14px 16px' }}>
@@ -116,7 +134,7 @@ function ExerciseCard({ theme, state, ex, live, active, done, warmupStyle, onTap
               border: `1px solid ${theme.accent2}40`,
               fontSize: 11, color: theme.text, lineHeight: 1.5,
             }}>
-              <strong style={{ color: theme.accent2 }}>⚠ Festgefahren</strong> — 2 Sessions auf {FT.fmtWeight(live.weight)}kg.
+              <strong style={{ color: theme.accent2 }}>⚠ Festgefahren</strong> - 2 Sessions auf {FT.fmtWeight(live.weight)}kg.
               Versuch <strong>Deload</strong>: nimm diese Session −10% und arbeite dich nächste Woche wieder hoch.
               <div style={{ marginTop: 6 }}>
                 <button onClick={() => onAdjustWeight(-Math.round(live.weight * 0.1 / 2.5) * 2.5)} style={{
@@ -135,15 +153,15 @@ function ExerciseCard({ theme, state, ex, live, active, done, warmupStyle, onTap
               <StepBtn theme={theme} onClick={() => onAdjustWeight(-ex.increment)}>−{FT.fmtWeight(ex.increment)}</StepBtn>
               <StepBtn theme={theme} onClick={() => onAdjustWeight(ex.increment)}>+{FT.fmtWeight(ex.increment)}</StepBtn>
               {ex.type === 'compound' && (
-                <button onClick={onOpenPlates} title="Plate Calc" style={{
-                  width: 36, height: 32, borderRadius: theme.radius,
+                <button onClick={onOpenPlates} title="Plate Calc" aria-label="Plate Calculator öffnen" style={{
+                  width: 44, height: 44, borderRadius: theme.radius,
                   background: theme.surface2, border: `1px solid ${theme.border}`,
                   color: theme.text, fontSize: 14, cursor: 'pointer',
                   fontFamily: theme.fontMono, fontWeight: 700,
                 }}>⏤⏤</button>
               )}
-              <button onClick={onReplace} title="Übung ersetzen" style={{
-                width: 32, height: 32, borderRadius: theme.radius,
+              <button onClick={onReplace} title="Übung ersetzen" aria-label="Übung ersetzen" style={{
+                width: 44, height: 44, borderRadius: theme.radius,
                 background: theme.surface2, border: `1px solid ${theme.border}`,
                 color: theme.muted, fontSize: 16, cursor: 'pointer', lineHeight: 1,
               }}>⇄</button>
@@ -199,7 +217,7 @@ function ExerciseCard({ theme, state, ex, live, active, done, warmupStyle, onTap
         </div>
       )}
 
-      {/* Erledigte Übung — Performance dieser Session nachschauen */}
+      {/* Erledigte Übung - Performance dieser Session nachschauen */}
       {active && done && (
         <div style={{ borderTop: `1px solid ${theme.border}`, padding: '14px 16px' }}>
           <Label theme={theme} style={{ marginBottom: 6 }}>Diese Session · {FT.fmtWeight(live.weight)}kg</Label>
@@ -221,7 +239,7 @@ function ExerciseCard({ theme, state, ex, live, active, done, warmupStyle, onTap
 function StepBtn({ theme, onClick, children }) {
   return (
     <button onClick={onClick} style={{
-      minWidth: 52, height: 32, padding: '0 8px', borderRadius: theme.radius,
+      minWidth: 52, height: 44, padding: '0 8px', borderRadius: theme.radius,
       background: theme.surface2, border: `1px solid ${theme.border}`,
       color: theme.text, fontWeight: 700, fontSize: 12, fontFamily: theme.fontMono,
       cursor: 'pointer',
@@ -230,7 +248,7 @@ function StepBtn({ theme, onClick, children }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// SET ROW — collapsed: ✓/○ summary; current: BIG "Satz fertig" button
+// SET ROW - collapsed: ✓/○ summary; current: BIG "Satz fertig" button
 // ─────────────────────────────────────────────────────────────
 function SetRow({ theme, idx, set, targetReps, isCurrent, rpeMode, onStart }) {
   if (set.done) {
@@ -292,7 +310,7 @@ function SetRow({ theme, idx, set, targetReps, isCurrent, rpeMode, onStart }) {
     );
   }
 
-  // Future set — just placeholder
+  // Future set - just placeholder
   return (
     <div style={{
       padding: '10px 12px', borderRadius: theme.radius,
@@ -309,7 +327,7 @@ function SetRow({ theme, idx, set, targetReps, isCurrent, rpeMode, onStart }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// REPLACE PICKER — pick a custom exercise to swap in
+// REPLACE PICKER - pick a custom exercise to swap in
 // ─────────────────────────────────────────────────────────────
 function ReplacePicker({ theme, state, ex, onPick, onClose }) {
   const customs = state.customExercises || [];

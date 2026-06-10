@@ -1,10 +1,10 @@
 /* global React, FT */
-// app-stats.jsx — Stats screen with per-exercise mini-graphs, PRs, water tracker
+// app-stats.jsx - Stats screen with per-exercise mini-graphs, PRs, water tracker
 
 const { useState: useStateStats, useMemo: useMemoStats } = React;
 
 // ─────────────────────────────────────────────────────────────
-// STATS SCREEN — per-exercise mini-graphs, 1RM, recent history
+// STATS SCREEN - per-exercise mini-graphs, 1RM, recent history
 // ─────────────────────────────────────────────────────────────
 function StatsScreen({ theme, state, setState, onClose }) {
   // Collect all unique exercises across plan + customs
@@ -24,6 +24,19 @@ function StatsScreen({ theme, state, setState, onClose }) {
   const muscleVolEntries = Object.entries(muscleVol).sort((a, b) => b[1] - a[1]);
   const totalThisWeek = muscleVolEntries.reduce((s, [, v]) => s + v, 0);
   const todayWater = state.water?.find(w => w.date === FT.todayISO())?.glasses || 0;
+
+  function changeWater(delta) {
+    setState && setState(s => {
+      const w = s.water || [];
+      const idx = w.findIndex(x => x.date === FT.todayISO());
+      const current = idx >= 0 ? w[idx].glasses : 0;
+      const next = Math.max(0, Math.min(12, current + delta));
+      if (idx >= 0) {
+        return { ...s, water: w.map((x, i) => i === idx ? { ...x, glasses: next } : x) };
+      }
+      return { ...s, water: [...w, { date: FT.todayISO(), glasses: next }] };
+    });
+  }
 
   return (
     <div style={{ height: '100%', overflowY: 'auto', WebkitOverflowScrolling: 'touch', paddingTop: theme.padTop || 56, paddingBottom: `calc(30px + ${theme.padBot || '0px'})` }}>
@@ -46,26 +59,26 @@ function StatsScreen({ theme, state, setState, onClose }) {
       </div>
 
       {/* Overall metrics */}
-      <div style={{ padding: '0 22px 14px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8 }}>
+      <div style={{ padding: '0 22px 14px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
         <Stat theme={theme} label="Sessions" value={state.sessions.length} />
-        <Stat theme={theme} label="Streak" value={streak ? `${streak}🔥` : '0'} />
+        <Stat theme={theme} label="Streak" value={streak ? `${streak}` : '0'} />
         <Stat theme={theme} label="Woche" value={state.weekNo} />
-        <Stat theme={theme} label="BW" value={lastBW ? `${FT.fmtWeight(lastBW.kg)}` : '—'} small />
+        <Stat theme={theme} label="BW" value={lastBW ? `${FT.fmtWeight(lastBW.kg)}` : '-'} />
       </div>
 
       {/* PR LIST */}
       {allPRs.length > 0 && (
         <div style={{ padding: '0 22px 14px' }}>
-          <Label theme={theme} style={{ marginBottom: 8 }}>🏆 Persönliche Rekorde</Label>
-          <Card theme={theme} style={{ padding: 4 }}>
+          <Label theme={theme} style={{ marginBottom: 8 }}>Persönliche Rekorde</Label>
+          <Card theme={theme} style={{ padding: 0 }}>
             {allPRs.map((pr, i) => (
               <div key={pr.id} style={{
-                padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10,
+                padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 10,
                 borderBottom: i < allPRs.length - 1 ? `1px solid ${theme.border}` : 'none',
               }}>
                 <div style={{
                   width: 26, height: 26, borderRadius: '50%',
-                  background: i === 0 ? theme.accent : theme.surface2,
+                  background: i === 0 ? theme.accent2 : theme.surface2,
                   color: i === 0 ? theme.accentText : theme.muted,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 12, fontWeight: 800, fontFamily: theme.fontMono,
@@ -87,14 +100,15 @@ function StatsScreen({ theme, state, setState, onClose }) {
         </div>
       )}
 
-      {/* VOLUME BY MUSCLE GROUP — last 7 days */}
+      {/* VOLUME BY MUSCLE GROUP - last 7 days */}
       {muscleVolEntries.length > 0 && (
         <div style={{ padding: '0 22px 14px' }}>
           <Label theme={theme} style={{ marginBottom: 8 }}>Volumen pro Muskelgruppe · 7 Tage</Label>
           <Card theme={theme} style={{ padding: 14 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {muscleVolEntries.map(([m, v]) => {
+              {muscleVolEntries.map(([m, v], i) => {
                 const pct = totalThisWeek > 0 ? (v / muscleVolEntries[0][1]) : 0;
+                const isTop = i === 0;
                 return (
                   <div key={m}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
@@ -106,7 +120,7 @@ function StatsScreen({ theme, state, setState, onClose }) {
                     <div style={{ height: 6, background: theme.surface2, borderRadius: 3, overflow: 'hidden' }}>
                       <div style={{
                         width: `${pct * 100}%`, height: '100%',
-                        background: `linear-gradient(90deg, ${theme.accent}, ${theme.accent2 || theme.accent})`,
+                        background: isTop ? theme.accent2 : theme.mutedStrong,
                         borderRadius: 3, transition: 'width .3s',
                       }} />
                     </div>
@@ -126,34 +140,35 @@ function StatsScreen({ theme, state, setState, onClose }) {
 
       {/* WATER TRACKER */}
       <div style={{ padding: '0 22px 14px' }}>
-        <Label theme={theme} style={{ marginBottom: 8 }}>💧 Wasser heute</Label>
+        <Label theme={theme} style={{ marginBottom: 8 }}>Wasser heute</Label>
         <Card theme={theme} style={{ padding: 14 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
             <div style={{ fontSize: 22, fontWeight: 800, fontFamily: theme.fontDisplay }}>
               {todayWater}<span style={{ fontSize: 12, color: theme.muted, marginLeft: 4 }}>/ 8 Gläser</span>
             </div>
-            <button onClick={() => {
-              setState && setState(s => {
-                const w = s.water || [];
-                const idx = w.findIndex(x => x.date === FT.todayISO());
-                if (idx >= 0) {
-                  return { ...s, water: w.map((x, i) => i === idx ? { ...x, glasses: x.glasses + 1 } : x) };
-                }
-                return { ...s, water: [...w, { date: FT.todayISO(), glasses: 1 }] };
-              });
-            }} style={{
-              padding: '10px 16px', borderRadius: theme.radius,
-              background: theme.accent, color: theme.accentText, border: 'none',
-              fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit',
-            }}>+ Glas</button>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button type="button" aria-label="Ein Glas weniger" disabled={todayWater <= 0}
+                onClick={() => changeWater(-1)} style={{
+                  width: 44, height: 44, borderRadius: theme.radius,
+                  background: theme.surface2, color: todayWater <= 0 ? theme.muted : theme.text,
+                  border: `1px solid ${theme.border}`,
+                  fontWeight: 800, fontSize: 18, cursor: todayWater <= 0 ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
+                  opacity: todayWater <= 0 ? 0.5 : 1,
+                }}>−</button>
+              <button type="button" aria-label="Ein Glas hinzufügen" onClick={() => changeWater(1)} style={{
+                minHeight: 44, padding: '10px 16px', borderRadius: theme.radius,
+                background: theme.accent, color: theme.accentText, border: 'none',
+                fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit',
+              }}>+ Glas</button>
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: 4 }}>
+          <div role="progressbar" aria-label="Wasserziel heute" aria-valuemin="0" aria-valuemax="8" aria-valuenow={Math.min(todayWater, 8)} style={{ display: 'flex', gap: 4 }}>
             {Array.from({ length: 8 }, (_, i) => (
               <div key={i} style={{
                 flex: 1, height: 28, borderRadius: 4,
-                background: i < todayWater ? theme.accent : theme.surface2,
-                border: `1px solid ${i < todayWater ? theme.accent : theme.border}`,
-                opacity: i < todayWater ? 1 : 0.6,
+                background: i < todayWater ? theme.text : theme.surface2,
+                border: `1px solid ${theme.border}`,
+                opacity: i < todayWater ? 0.85 : 0.6,
               }} />
             ))}
           </div>
@@ -227,11 +242,11 @@ function ExerciseStatCard({ theme, ex, history, oneRM }) {
           {history.length} Session{history.length === 1 ? '' : 's'}
         </div>
       </div>
-      <MiniChart theme={theme} data={data} color={theme.accent} unit="kg" />
+      <MiniChart theme={theme} data={data} color={theme.accent2} unit="kg" />
       <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
         <Mini theme={theme} label="Aktuell" v={`${FT.fmtWeight(last.weight)}kg`} />
         <Mini theme={theme} label="Best" v={`${FT.fmtWeight(best?.weight || 0)}kg`} />
-        <Mini theme={theme} label="1RM est." v={oneRM ? `${Math.round(oneRM)}kg` : '—'} />
+        <Mini theme={theme} label="1RM est." v={oneRM ? `${Math.round(oneRM)}kg` : '-'} />
       </div>
     </div>
   );
@@ -247,7 +262,7 @@ function Mini({ theme, label, v }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// MINI CHART — simple sparkline
+// MINI CHART - simple sparkline
 // ─────────────────────────────────────────────────────────────
 function MiniChart({ theme, data, color, unit }) {
   if (!data || data.length === 0) return null;
@@ -271,13 +286,7 @@ function MiniChart({ theme, data, color, unit }) {
   const area = path + ` L ${points[points.length - 1][0]},${h} L ${points[0][0]},${h} Z`;
   return (
     <svg viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', height: 60, display: 'block' }}>
-      <defs>
-        <linearGradient id={`g-${color}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.25" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d={area} fill={`url(#g-${color})`} />
+      <path d={area} fill={color} fillOpacity="0.12" />
       <path d={path} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       {points.map((p, i) => (
         <circle key={i} cx={p[0]} cy={p[1]} r="2.5" fill={color} />

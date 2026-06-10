@@ -11,7 +11,7 @@
   style.textContent = `
     @media (max-width: 768px) and (any-pointer: coarse) {
       html, body { overflow: hidden; height: 100dvh; }
-      body { background: #0A0908 !important; }
+      body { background: var(--app-bg, #0A0908) !important; }
     }
     :root {
       --sat: env(safe-area-inset-top, 0px);
@@ -55,25 +55,58 @@ function useIsMobile() {
   return mobile;
 }
 
+// Track the chosen skin (Beast / Iron / Neon) so the outer chrome
+// (mobile full-bleed bg, desktop backdrop, body) follows the selection,
+// not just the App subtree. Reuses the persistence wired in app-main.jsx.
+function useThemeId() {
+  const read = () => (window.FT_THEME ? window.FT_THEME.read() : null);
+  const [id, setId] = React.useState(read);
+  React.useEffect(() => {
+    const onChange = () => setId(read());
+    const evt = window.FT_THEME ? window.FT_THEME.EVENT : 'ft:themechange';
+    window.addEventListener(evt, onChange);
+    window.addEventListener('storage', onChange);
+    return () => {
+      window.removeEventListener(evt, onChange);
+      window.removeEventListener('storage', onChange);
+    };
+  }, []);
+  return id;
+}
+
 function Root() {
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const isMobile = useIsMobile();
+  const themeId = useThemeId();
 
   const theme = React.useMemo(() => {
-    const base = window.THEMES.beast;
+    const beast = window.THEMES.beast;
+    // Beast (or no selection) keeps the editor tweaks; any other skin
+    // overlays its own tokens (bg, surfaces, accent, fonts) verbatim.
+    const useSkin = themeId && themeId !== 'beast' && window.THEMES[themeId];
+    const base = useSkin ? { ...beast, ...window.THEMES[themeId] } : beast;
+    const accent = useSkin ? base.accent : t.accent;
+    const accent2 = useSkin ? base.accent2 : t.accent2;
     return {
       ...base,
       isMobile,
       padTop: isMobile ? 'calc(env(safe-area-inset-top, 20px) + 12px)' : 56,
       padBot: isMobile ? 'calc(env(safe-area-inset-bottom, 0px) + 20px)' : 0,
-      accent: t.accent,
-      accent2: t.accent2,
-      fontDisplay: `"${t.displayFont}", "Bebas Neue", "Oswald", "Inter", sans-serif`,
-      upperHeads: t.uppercaseHeads,
-      cardShadow: `0 1px 0 rgba(255,255,255,0.04) inset, 0 ${18 * t.glowIntensity}px ${30 * t.glowIntensity}px -22px rgba(0,0,0,0.7), 0 0 ${40 * t.glowIntensity}px -20px ${t.accent}40`,
-      bgGrad: `radial-gradient(ellipse at top, ${hexAlpha(t.accent, 0.10 * t.glowIntensity)} 0%, #0A0908 65%)`,
+      accent,
+      accent2,
+      fontDisplay: useSkin ? base.fontDisplay
+        : `"${t.displayFont}", "Bebas Neue", "Oswald", "Inter", sans-serif`,
+      upperHeads: useSkin ? base.upperHeads : t.uppercaseHeads,
+      cardShadow: `0 1px 0 rgba(255,255,255,0.04) inset, 0 ${18 * t.glowIntensity}px ${30 * t.glowIntensity}px -22px rgba(0,0,0,0.7), 0 0 ${40 * t.glowIntensity}px -20px ${accent}40`,
+      bgGrad: useSkin ? base.bgGrad
+        : `radial-gradient(ellipse at top, ${hexAlpha(t.accent, 0.10 * t.glowIntensity)} 0%, #0A0908 65%)`,
     };
-  }, [t.accent, t.accent2, t.displayFont, t.uppercaseHeads, t.glowIntensity, isMobile]);
+  }, [t.accent, t.accent2, t.displayFont, t.uppercaseHeads, t.glowIntensity, isMobile, themeId]);
+
+  // Keep the body backdrop (visible behind safe areas / overscroll) in sync.
+  React.useEffect(() => {
+    document.documentElement.style.setProperty('--app-bg', theme.bg);
+  }, [theme.bg]);
 
   const stageRef = React.useRef(null);
   const [scale, setScale] = React.useState(1);
@@ -109,7 +142,7 @@ function Root() {
     <div style={{
       width: '100vw', height: '100vh',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: '#0A0908',
+      background: theme.bg,
       backgroundImage: `
         radial-gradient(ellipse at 20% 20%, ${hexAlpha(theme.accent, 0.08)} 0%, transparent 50%),
         radial-gradient(ellipse at 80% 80%, ${hexAlpha(theme.accent2, 0.05)} 0%, transparent 50%)

@@ -1,10 +1,40 @@
 /* global React, FT */
-// app-coach.jsx — Coach screen: Claude feedback, Form-Cues, Custom Übungen, Replace
+// app-coach.jsx - Coach screen: Claude feedback, Form-Cues, Custom Übungen, Replace
 
 const { useState: useStateC, useEffect: useEffectC } = React;
 
+const COACH_TAB_KEY = 'ft.coach.tab';
+const COACH_TABS = [
+  {
+    id: 'feedback', label: 'KI',
+    icon: <path d="M12 8V4M9 4h6M5 10h14a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7a1 1 0 0 1 1-1zM9 14h.01M15 14h.01" />,
+  },
+  {
+    id: 'video', label: 'Video',
+    icon: <path d="M3 7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7zM15 10l6-3v10l-6-3" />,
+  },
+  {
+    id: 'cues', label: 'Form',
+    icon: <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 12v.01M12 8v4" />,
+  },
+  {
+    id: 'custom', label: 'Übung',
+    icon: <path d="M12 5v14M5 12h14" />,
+  },
+];
+
 function CoachScreen({ theme, state, setState, onClose }) {
-  const [tab, setTab] = useStateC('feedback'); // feedback | cues | custom
+  const [tab, setTab] = useStateC(() => {
+    try {
+      const saved = localStorage.getItem(COACH_TAB_KEY);
+      if (saved && COACH_TABS.some(t => t.id === saved)) return saved;
+    } catch (e) { /* localStorage unavailable */ }
+    return 'feedback';
+  }); // feedback | cues | custom
+
+  useEffectC(() => {
+    try { localStorage.setItem(COACH_TAB_KEY, tab); } catch (e) { /* ignore */ }
+  }, [tab]);
 
   return (
     <div style={{ height: '100%', overflowY: 'auto', WebkitOverflowScrolling: 'touch', paddingTop: theme.padTop || 56, paddingBottom: `calc(30px + ${theme.padBot || '0px'})` }}>
@@ -12,7 +42,8 @@ function CoachScreen({ theme, state, setState, onClose }) {
         <button onClick={onClose} style={{
           background: 'transparent', border: 'none', color: theme.muted,
           fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-          fontFamily: 'inherit', padding: 0,
+          fontFamily: 'inherit', minHeight: 44, minWidth: 44, padding: '10px 12px',
+          marginLeft: -12,
         }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           Zurück
@@ -26,20 +57,25 @@ function CoachScreen({ theme, state, setState, onClose }) {
 
       {/* Tabs */}
       <div style={{ padding: '0 22px 14px', display: 'flex', gap: 4 }}>
-        {[
-          { id: 'feedback', label: '🤖 KI' },
-          { id: 'video',    label: '📹 Video' },
-          { id: 'cues',     label: '🎯 Form' },
-          { id: 'custom',   label: '➕ Übung' },
-        ].map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)} style={{
-            flex: 1, padding: '10px 0', borderRadius: theme.radius,
-            background: tab === t.id ? theme.surface : 'transparent',
-            color: tab === t.id ? theme.text : theme.muted,
-            border: `1px solid ${tab === t.id ? theme.borderStrong : 'transparent'}`,
-            fontSize: 11, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer',
-          }}>{t.label}</button>
-        ))}
+        {COACH_TABS.map(t => {
+          const active = tab === t.id;
+          return (
+            <button key={t.id} onClick={() => setTab(t.id)} aria-pressed={active} style={{
+              flex: 1, minHeight: 44, padding: '14px 0', borderRadius: theme.radius,
+              background: active ? theme.surface : 'transparent',
+              color: active ? theme.accent2 : theme.muted,
+              border: `1px solid ${active ? theme.borderStrong : 'transparent'}`,
+              fontSize: 12, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                {t.icon}
+              </svg>
+              {t.label}
+            </button>
+          );
+        })}
       </div>
 
       {tab === 'feedback' && <FeedbackTab theme={theme} state={state} />}
@@ -51,7 +87,7 @@ function CoachScreen({ theme, state, setState, onClose }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// FEEDBACK TAB — Claude-powered weekly analysis
+// FEEDBACK TAB - Claude-powered weekly analysis
 // ─────────────────────────────────────────────────────────────
 function FeedbackTab({ theme, state }) {
   const [loading, setLoading] = useStateC(false);
@@ -62,7 +98,7 @@ function FeedbackTab({ theme, state }) {
     setLoading(true); setError(''); setResponse('');
     const recent = state.sessions.slice(-6);
     if (!recent.length) {
-      setError('Noch keine Sessions. Trainier ein paar Mal — dann kann der Coach was sagen.');
+      setError('Noch keine Sessions. Trainier ein paar Mal - dann kann der Coach was sagen.');
       setLoading(false);
       return;
     }
@@ -92,8 +128,11 @@ Gib mir in 4-5 kurzen Absätzen lockeres, ehrliches Feedback auf Deutsch:
 Keine generischen Phrasen. Konkret und kurz.`;
 
     try {
+      if (!window.claude?.complete) {
+        throw new Error('claude_unavailable');
+      }
       const text = await window.claude.complete(prompt);
-      setResponse(text || 'Coach hat nix gesagt 🤷');
+      setResponse(text || 'Coach hat gerade nichts gesagt.');
     } catch (e) {
       setError("Coach ist gerade nicht erreichbar. Versuch's gleich nochmal.");
       console.error(e);
@@ -105,12 +144,12 @@ Keine generischen Phrasen. Konkret und kurz.`;
       <Card theme={theme} style={{ padding: 16 }}>
         <Label theme={theme}>KI-Coach</Label>
         <div style={{ marginTop: 6, fontSize: 13, color: theme.mutedStrong, lineHeight: 1.5 }}>
-          Hol dir ein lockeres Feedback zu deinen letzten 6 Sessions —
+          Hol dir ein lockeres Feedback zu deinen letzten 6 Sessions:
           was läuft, wo's stockt, was du nächste Woche probieren solltest.
         </div>
         <div style={{ height: 14 }} />
         <Btn theme={theme} kind="primary" full onClick={generate} disabled={loading}>
-          {loading ? '⏳ Coach denkt nach …' : '🤖 Feedback generieren'}
+          {loading ? 'Coach denkt nach …' : 'Feedback generieren'}
         </Btn>
       </Card>
 
@@ -134,16 +173,22 @@ Keine generischen Phrasen. Konkret und kurz.`;
         marginTop: 14, padding: 12, borderRadius: theme.radius,
         background: theme.surface2, fontSize: 10, color: theme.muted,
         fontFamily: theme.fontMono, lineHeight: 1.5,
+        display: 'flex', gap: 8,
       }}>
-        ℹ️ Coach-Antworten basieren auf einem KI-Modell.
-        Bei Verletzungen / Schmerzen immer mit echtem Arzt / Physio reden.
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+          style={{ flexShrink: 0, marginTop: 1 }}>
+          <circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" />
+        </svg>
+        <span>Coach-Antworten basieren auf einem KI-Modell.
+        Bei Verletzungen / Schmerzen immer mit echtem Arzt / Physio reden.</span>
       </div>
     </div>
   );
 }
 
 // ─────────────────────────────────────────────────────────────
-// CUES TAB — form cues for each plan exercise
+// CUES TAB - form cues for each plan exercise
 // ─────────────────────────────────────────────────────────────
 function CuesTab({ theme }) {
   const allEx = [];
@@ -201,7 +246,7 @@ function CuesTab({ theme }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// CUSTOM TAB — add custom exercises, manage replacements
+// CUSTOM TAB - add custom exercises, manage replacements
 // ─────────────────────────────────────────────────────────────
 function CustomTab({ theme, state, setState }) {
   const customs = state.customExercises || [];
@@ -231,7 +276,7 @@ function CustomTab({ theme, state, setState }) {
           <div style={{ marginBottom: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Label theme={theme}>Eigene Übungen ({customs.length})</Label>
             <button onClick={() => setAdding(true)} style={{
-              padding: '8px 12px', borderRadius: theme.radius,
+              minHeight: 44, padding: '10px 14px', borderRadius: theme.radius,
               background: theme.accent, color: theme.accentText,
               border: 'none', fontWeight: 700, fontSize: 12,
               cursor: 'pointer', fontFamily: 'inherit',
@@ -245,7 +290,7 @@ function CustomTab({ theme, state, setState }) {
               fontSize: 12, color: theme.muted, textAlign: 'center',
             }}>
               Noch keine eigenen Übungen.<br />
-              Tippe „+ Neue Übung" — z.B. Klimmzüge, Dips, Hammer Curls.
+              Tippe „+ Neue Übung" - z.B. Klimmzüge, Dips, Hammer Curls.
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -262,8 +307,11 @@ function CustomTab({ theme, state, setState }) {
                       </div>
                     </div>
                     <button onClick={() => deleteCustom(c.id)} style={{
-                      background: 'transparent', border: 'none', color: theme.danger,
-                      fontSize: 11, cursor: 'pointer', fontFamily: 'inherit',
+                      background: 'transparent', color: theme.danger,
+                      border: `1px solid ${theme.danger}40`, borderRadius: theme.radius,
+                      fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
+                      minHeight: 44, minWidth: 44, padding: '10px 12px',
+                      alignSelf: 'flex-start',
                     }}>Löschen</button>
                   </div>
                 </div>
@@ -313,31 +361,32 @@ function CustomForm({ theme, onAdd, onCancel }) {
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <div style={{ fontSize: 14, fontWeight: 700 }}>Neue Übung</div>
-        <button onClick={onCancel} style={{
+        <button type="button" onClick={onCancel} style={{
           background: 'transparent', border: 'none', color: theme.muted,
           fontSize: 11, cursor: 'pointer', fontFamily: 'inherit',
+          minHeight: 44, minWidth: 44, padding: '10px 12px', marginRight: -12,
         }}>Abbrechen</button>
       </div>
 
-      <Label theme={theme} style={{ marginBottom: 4 }}>Name</Label>
-      <input value={name} onChange={e => setName(e.target.value)}
+      <Label theme={theme} htmlFor="custom-ex-name" style={{ marginBottom: 4 }}>Name</Label>
+      <input id="custom-ex-name" name="customExerciseName" value={name} onChange={e => setName(e.target.value)}
         placeholder="z.B. Klimmzüge"
         style={inputStyle(theme)} />
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginTop: 10 }}>
-        <NumField theme={theme} label="Sätze" value={sets} onChange={setSets} />
-        <NumField theme={theme} label="Wdh"   value={reps} onChange={setReps} />
-        <NumField theme={theme} label="Gewicht" value={weight} onChange={setWeight} step={2.5} unit="kg" />
+        <NumField theme={theme} id="custom-ex-sets" label="Sätze" value={sets} onChange={setSets} />
+        <NumField theme={theme} id="custom-ex-reps" label="Wdh" value={reps} onChange={setReps} />
+        <NumField theme={theme} id="custom-ex-weight" label="Gewicht" value={weight} onChange={setWeight} step={2.5} unit="kg" />
       </div>
 
       <div style={{ marginTop: 10 }}>
         <Label theme={theme} style={{ marginBottom: 4 }}>Typ</Label>
         <div style={{ display: 'flex', gap: 6 }}>
-          {[['compound', 'Compound +2.5kg'], ['isolation', 'Isolation +1.25kg']].map(([k, l]) => (
-            <button key={k} onClick={() => setType(k)} style={{
-              flex: 1, padding: '10px 8px', borderRadius: theme.radius,
-              background: type === k ? theme.accent : theme.surface2,
-              color: type === k ? theme.accentText : theme.text,
+          {[['compound', 'Compound +2.5 kg'], ['isolation', 'Isolation +1.25 kg']].map(([k, l]) => (
+            <button key={k} type="button" aria-pressed={type === k} onClick={() => setType(k)} style={{
+              flex: 1, minHeight: 44, padding: '12px 8px', borderRadius: theme.radius,
+              background: type === k ? theme.accent + '22' : theme.surface2,
+              color: type === k ? theme.accent : theme.text,
               border: `1px solid ${type === k ? theme.accent : theme.border}`,
               fontSize: 11, fontWeight: 700, fontFamily: 'inherit',
               cursor: 'pointer',
@@ -347,24 +396,25 @@ function CustomForm({ theme, onAdd, onCancel }) {
       </div>
 
       <div style={{ marginTop: 10 }}>
-        <Label theme={theme} style={{ marginBottom: 4 }}>Pause (Sekunden)</Label>
-        <input type="number" value={rest} onChange={e => setRest(parseInt(e.target.value) || 60)}
+        <Label theme={theme} htmlFor="custom-ex-rest" style={{ marginBottom: 4 }}>Pause (Sekunden)</Label>
+        <input id="custom-ex-rest" name="customExerciseRest" type="number" min="0" step="5" inputMode="numeric"
+          value={rest} onChange={e => setRest(parseInt(e.target.value) || 60)}
           style={inputStyle(theme)} />
       </div>
 
       <div style={{ height: 14 }} />
       <Btn theme={theme} kind="primary" full onClick={submit} disabled={!name.trim()}>
-        ✓ Hinzufügen
+        Hinzufügen
       </Btn>
     </div>
   );
 }
 
-function NumField({ theme, label, value, onChange, step = 1, unit }) {
+function NumField({ theme, id, label, value, onChange, step = 1, unit }) {
   return (
     <div>
-      <Label theme={theme} style={{ marginBottom: 4 }}>{label}{unit ? ` (${unit})` : ''}</Label>
-      <input type="number" step={step} value={value}
+      <Label theme={theme} htmlFor={id} style={{ marginBottom: 4 }}>{label}{unit ? ` (${unit})` : ''}</Label>
+      <input id={id} name={id} type="number" min="0" step={step} inputMode="decimal" value={value}
         onChange={e => onChange(parseFloat(e.target.value) || 0)}
         style={inputStyle(theme)} />
     </div>
@@ -376,7 +426,7 @@ function inputStyle(theme) {
     width: '100%', boxSizing: 'border-box',
     padding: '10px 12px', borderRadius: theme.radius,
     background: theme.bg, border: `1px solid ${theme.border}`,
-    color: theme.text, fontSize: 13, fontFamily: 'inherit', outline: 'none',
+    color: theme.text, fontSize: 16, fontFamily: 'inherit', outline: 'none',
   };
 }
 

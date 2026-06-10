@@ -1,5 +1,5 @@
 /* global React, FT */
-// app-workout.jsx — Workout flow orchestrator (REWORKED):
+// app-workout.jsx - Workout flow orchestrator (REWORKED):
 // • Pause-first: tap "Satz fertig" → rest timer starts immediately, log details DURING the pause
 // • Big tap targets, inline plate calc, RIR/RPE switch, form-tag
 // • Wake-lock while a workout is active
@@ -16,30 +16,60 @@ function WorkoutScreen({ theme, state, setState, sessionId, onExit, onComplete, 
   const exercises = useMemoW(() => FT.getSessionExercises(state, sessionId), [state, sessionId]);
   const lastSession = FT.findLastSession(state, sessionId);
 
-  // Live working state
-  const [live, setLive] = useStateW(() => exercises.map(ex => {
-    const suggested = FT.suggestNextWeight(ex, lastSession);
-    return {
-      id: ex.id, weight: suggested,
-      sets: Array.from({ length: ex.sets }, () => ({
-        reps: null, rpe: null, form: 'sauber', note: '', done: false,
-      })),
-    };
-  }));
+  // Persisted running session: mirror live + activeEx + restState to
+  // localStorage so an accidental reload mid-workout doesn't lose logged sets.
+  const activeKey = `ft.activeSession.${sessionId}`;
+  function loadActive() {
+    try { return JSON.parse(localStorage.getItem(activeKey) || 'null'); }
+    catch { return null; }
+  }
+  function clearActive() {
+    try { localStorage.removeItem(activeKey); } catch {}
+  }
 
-  const [activeEx, setActiveEx] = useStateW(0);
-  const [restState, setRestState] = useStateW(null);  // {exIdx, setIdx, duration, startedAt}
+  // Live working state (rehydrate from persisted snapshot if it matches the
+  // current exercise line-up; otherwise start fresh from suggestions).
+  const [live, setLive] = useStateW(() => {
+    const fresh = exercises.map(ex => {
+      const suggested = FT.suggestNextWeight(ex, lastSession);
+      return {
+        id: ex.id, weight: suggested,
+        sets: Array.from({ length: ex.sets }, () => ({
+          reps: null, rpe: null, form: 'sauber', note: '', done: false,
+        })),
+      };
+    });
+    const saved = loadActive();
+    if (saved?.live && Array.isArray(saved.live)
+      && saved.live.length === fresh.length
+      && saved.live.every((l, i) => l.id === fresh[i].id && l.sets?.length === fresh[i].sets.length)) {
+      return saved.live;
+    }
+    return fresh;
+  });
+
+  const [activeEx, setActiveEx] = useStateW(() => loadActive()?.activeEx ?? 0);
+  const [restState, setRestState] = useStateW(() => loadActive()?.restState ?? null);  // {exIdx, setIdx, duration, startedAt}
   const [summary, setSummary] = useStateW(null);
   const [showReplace, setShowReplace] = useStateW(null);  // exIdx or null
   const [inlinePlate, setInlinePlate] = useStateW(null); // {target, bar}
+  const [showExit, setShowExit] = useStateW(false);  // exit-confirm bottom sheet
 
-  // Wake Lock — keep screen on during a workout
+  // Wake Lock - keep screen on during a workout
   useEffectW(() => {
     if (state.settings.wakeLockEnabled) FT.requestWakeLock();
     return () => FT.releaseWakeLock();
   }, [state.settings.wakeLockEnabled]);
 
+  // Mirror the running session to localStorage on every change so a reload
+  // mid-workout rehydrates instead of losing logged sets.
+  useEffectW(() => {
+    try { localStorage.setItem(activeKey, JSON.stringify({ live, activeEx, restState })); }
+    catch (e) { console.warn('active session save failed', e); }
+  }, [live, activeEx, restState]);
+
   const isSessionDone = useMemoW(() => live.every(l => l.sets.every(s => s.done)), [live]);
+  const hasProgress = useMemoW(() => live.some(l => l.sets.some(s => s.done)), [live]);
 
   // Tap "Satz fertig" → start rest IMMEDIATELY with defaults; log details during rest
   function startSetCompletion(exIdx, setIdx) {
@@ -97,7 +127,20 @@ function WorkoutScreen({ theme, state, setState, sessionId, onExit, onComplete, 
         reps: s.reps, rpe: s.rpe, form: s.form, note: s.note,
       })),
     })).filter(e => e.sets.length > 0);
+    clearActive();
     setSummary({ exercisesLog });
+  }
+
+  function requestExit() {
+    if (hasProgress) { setShowExit(true); return; }
+    clearActive();
+    onExit();
+  }
+
+  function confirmExit() {
+    clearActive();
+    setShowExit(false);
+    onExit();
   }
 
   function saveSessionWithFeel(feel, notes, recovery) {
@@ -142,7 +185,7 @@ function WorkoutScreen({ theme, state, setState, sessionId, onExit, onComplete, 
     <div style={{ height: '100%', overflowY: 'auto', WebkitOverflowScrolling: 'touch', paddingTop: theme.padTop || 56, paddingBottom: `calc(20px + ${theme.padBot || '0px'})` }}>
       {/* Top bar */}
       <div style={{ padding: '12px 22px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <button onClick={onExit} style={{
+        <button type="button" onClick={requestExit} style={{
           background: 'transparent', border: 'none', color: theme.muted,
           fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
           padding: 0, fontFamily: 'inherit',
@@ -218,6 +261,34 @@ function WorkoutScreen({ theme, state, setState, sessionId, onExit, onComplete, 
           onPick={(customId) => applyReplacement(showReplace, customId)}
           onClose={() => setShowReplace(null)} />
       )}
+
+      {/* Exit-confirm bottom sheet (replaces native confirm()) */}
+      {showExit && (
+        <div role="dialog" aria-modal="true" aria-label="Workout beenden" style={{
+          position: 'absolute', inset: 0, zIndex: 110,
+          background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          display: 'flex', flexDirection: 'column',
+          animation: 'fadeIn .2s',
+        }} onClick={() => setShowExit(false)}>
+          <div onClick={e => e.stopPropagation()} style={{
+            marginTop: 'auto', padding: 22, paddingBottom: 36,
+            background: theme.surface, borderRadius: `${theme.radiusXl}px ${theme.radiusXl}px 0 0`,
+            borderTop: `1px solid ${theme.borderStrong}`,
+          }}>
+            <div style={{ width: 40, height: 4, background: theme.border, borderRadius: 2, margin: '0 auto 18px' }} />
+            <Heading theme={theme} size="md">Workout beenden?</Heading>
+            <div style={{ color: theme.muted, fontSize: 13, marginTop: 6, lineHeight: 1.5 }}>
+              Bereits erfasste Sätze dieser Session werden verworfen.
+            </div>
+            <div style={{ height: 18 }} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <Btn theme={theme} kind="danger" full onClick={confirmExit}>Verwerfen</Btn>
+              <Btn theme={theme} kind="ghost" full onClick={() => setShowExit(false)}>Weiter trainieren</Btn>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -249,7 +320,8 @@ function SessionSummary({ theme, session, exercises, summary, onSave, onCancel }
         <Label theme={theme} style={{ marginBottom: 8 }}>Wie hat sich's angefühlt?</Label>
         <div style={{ display: 'flex', gap: 6 }}>
           {[1, 2, 3, 4, 5].map(n => (
-            <button key={n} onClick={() => setFeel(n)} style={{
+            <button key={n} type="button" aria-label={`${n} von 5 Sternen`} aria-pressed={feel === n}
+              onClick={() => setFeel(n)} style={{
               flex: 1, padding: '14px 0', borderRadius: theme.radius,
               background: feel >= n ? theme.accent : theme.surface,
               color: feel >= n ? theme.accentText : theme.muted,
@@ -264,14 +336,14 @@ function SessionSummary({ theme, session, exercises, summary, onSave, onCancel }
       </div>
 
       <div style={{ padding: '18px 22px 0' }}>
-        <Label theme={theme} style={{ marginBottom: 6 }}>Tagebuch (optional)</Label>
-        <textarea value={notes} onChange={e => setNotes(e.target.value)}
+        <Label theme={theme} htmlFor="session-notes" style={{ marginBottom: 6 }}>Tagebuch (optional)</Label>
+        <textarea id="session-notes" name="sessionNotes" value={notes} onChange={e => setNotes(e.target.value)}
           placeholder="Schlaf? Energie? Stimmung?"
           style={{
             width: '100%', boxSizing: 'border-box', minHeight: 70,
             padding: 12, borderRadius: theme.radius, background: theme.surface,
             border: `1px solid ${theme.border}`, color: theme.text,
-            fontSize: 13, fontFamily: 'inherit', outline: 'none', resize: 'none',
+            fontSize: 16, fontFamily: 'inherit', outline: 'none', resize: 'none',
           }} />
       </div>
 

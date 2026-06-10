@@ -1,7 +1,7 @@
-// lib.js — vanilla data + helpers shared by all theme variants
+// lib.js - vanilla data + helpers shared by all theme variants
 
 // ─────────────────────────────────────────────────────────────
-// TRAINING PLAN  (Restart Phase — Start 25.05.2026)
+// TRAINING PLAN  (Restart Phase - Start 25.05.2026)
 // ─────────────────────────────────────────────────────────────
 const TRAINING_PLAN = {
   A: {
@@ -15,7 +15,7 @@ const TRAINING_PLAN = {
         name: 'Kniebeugen',
         warmups: [{ w: 'Stange', r: 10 }, { w: 40, r: 5 }, { w: 55, r: 3 }],
         sets: 3, reps: 5, weight: 70, rest: 150,
-        restRange: '2–3 min',
+        restRange: '2-3 min',
         type: 'compound', increment: 2.5, bar: 20,
       },
       {
@@ -23,7 +23,7 @@ const TRAINING_PLAN = {
         name: 'Bankdrücken',
         warmups: [{ w: 'Stange', r: 10 }, { w: 30, r: 5 }],
         sets: 3, reps: 5, weight: 45, rest: 105,
-        restRange: '90–120 s',
+        restRange: '90-120 s',
         type: 'compound', increment: 2.5, bar: 20,
       },
       {
@@ -67,7 +67,7 @@ const TRAINING_PLAN = {
         id: 'curl',
         name: 'Bizepscurls',
         warmups: [], sets: 3, reps: 12, weight: 20, rest: 75,
-        restRange: '60–90 s',
+        restRange: '60-90 s',
         type: 'isolation', increment: 1.25, bar: 20,
       },
       {
@@ -90,7 +90,7 @@ const TRAINING_PLAN = {
         name: 'Kniebeugen',
         warmups: [{ w: 'Stange', r: 10 }, { w: 40, r: 5 }, { w: 55, r: 3 }],
         sets: 3, reps: 5, weight: 70, rest: 150,
-        restRange: '2–3 min',
+        restRange: '2-3 min',
         type: 'compound', increment: 2.5, bar: 20,
       },
       {
@@ -98,7 +98,7 @@ const TRAINING_PLAN = {
         name: 'Overhead Press',
         warmups: [{ w: 'Stange', r: 10 }, { w: 20, r: 5 }],
         sets: 3, reps: 5, weight: 30, rest: 105,
-        restRange: '90–120 s',
+        restRange: '90-120 s',
         type: 'compound', increment: 1.25, bar: 20,
       },
       {
@@ -117,7 +117,7 @@ const SESSION_ORDER = ['A', 'B', 'C'];
 const SESSION_DOW = { 1: 'A', 3: 'B', 5: 'C' }; // Mo, Mi, Fr
 
 // ─────────────────────────────────────────────────────────────
-// MOBILITY  (separate routines — Beweglichkeit, getrennt vom Krafttraining)
+// MOBILITY  (separate routines - Beweglichkeit, getrennt vom Krafttraining)
 // Übung: {id, name, side, pose, dur|reps, setup, steps[], tip, mistakes[]}
 //   - pose = Schlüssel für die Strichfigur in app-mobility.jsx (MOBILITY_POSES)
 //   - Links/rechts = zwei Einträge mit _l/_r, gleiche pose
@@ -133,9 +133,9 @@ const MOBILITY_ROUTINES = {
         id: 'hip_90_90', name: '90/90 Hüftwechsel', side: 'both', pose: 'hip_90_90', dur: 60,
         setup: 'Aufrecht auf dem Boden sitzen: vorderes Bein 90° vor dir, hinteres Bein 90° zur Seite. Beide Knie und Knöchel berühren möglichst den Boden.',
         steps: [
-          'Brustbein hoch, Rücken lang — keine Rundung.',
+          'Brustbein hoch, Rücken lang - keine Rundung.',
           'Knie und Hüfte aktiv in Richtung Boden drücken, Sitz fühlen.',
-          '3–4 Sekunden halten, dann durch die Mitte zur anderen Seite kippen.',
+          '3-4 Sekunden halten, dann durch die Mitte zur anderen Seite kippen.',
           'Wechsel kontrolliert und langsam, nicht werfen.',
         ],
         tip: 'Wenn das vordere Knie nicht runter kommt: Po leicht heben oder die hintere Hand zur Stütze setzen.',
@@ -149,7 +149,7 @@ const MOBILITY_ROUTINES = {
         id: 'couch_l', name: 'Couch-Stretch (links)', side: 'left', pose: 'couch_stretch', dur: 45,
         setup: 'Im Halbkniestand vor einer Wand / Couch. Linkes Knie am Boden, Schienbein/Fußrücken an die Wand. Rechtes Bein vorn 90°.',
         steps: [
-          'Becken aktiv nach oben/vorn aufrichten — Po fest anspannen.',
+          'Becken aktiv nach oben/vorn aufrichten - Po fest anspannen.',
           'Bauch leicht anspannen, Rippen runter.',
           'Oberkörper aufrecht halten oder leicht zurück lehnen.',
           'Tief atmen, im Dehngefühl bleiben, nicht zerren.',
@@ -157,7 +157,7 @@ const MOBILITY_ROUTINES = {
         tip: 'Erst wenn das Becken aufgerichtet ist, beginnt der eigentliche Dehnreiz im Hüftbeuger.',
         mistakes: [
           'Hohlkreuz: Becken kippt vor statt aufzurichten',
-          'Knie weh weil zu wenig Polster — Handtuch drunter',
+          'Knie weh weil zu wenig Polster - Handtuch drunter',
           'Im Schmerz dehnen statt im Dehngefühl',
         ],
       },
@@ -165,7 +165,7 @@ const MOBILITY_ROUTINES = {
         id: 'couch_r', name: 'Couch-Stretch (rechts)', side: 'right', pose: 'couch_stretch', dur: 45,
         setup: 'Im Halbkniestand vor einer Wand / Couch. Rechtes Knie am Boden, Schienbein/Fußrücken an die Wand. Linkes Bein vorn 90°.',
         steps: [
-          'Becken aktiv nach oben/vorn aufrichten — Po fest anspannen.',
+          'Becken aktiv nach oben/vorn aufrichten - Po fest anspannen.',
           'Bauch leicht anspannen, Rippen runter.',
           'Oberkörper aufrecht halten oder leicht zurück lehnen.',
           'Tief atmen, im Dehngefühl bleiben, nicht zerren.',
@@ -173,15 +173,15 @@ const MOBILITY_ROUTINES = {
         tip: 'Erst wenn das Becken aufgerichtet ist, beginnt der eigentliche Dehnreiz im Hüftbeuger.',
         mistakes: [
           'Hohlkreuz: Becken kippt vor statt aufzurichten',
-          'Knie weh weil zu wenig Polster — Handtuch drunter',
+          'Knie weh weil zu wenig Polster - Handtuch drunter',
           'Im Schmerz dehnen statt im Dehngefühl',
         ],
       },
       {
         id: 'deep_squat', name: 'Tiefe Hocke halten', side: 'both', pose: 'deep_squat', dur: 60,
-        setup: 'Füße schulterbreit, Zehen leicht nach außen. Tief in die Hocke setzen — Po geht Richtung Fersen.',
+        setup: 'Füße schulterbreit, Zehen leicht nach außen. Tief in die Hocke setzen - Po geht Richtung Fersen.',
         steps: [
-          'Fersen bleiben am Boden — wenn nicht, Stand etwas breiter machen.',
+          'Fersen bleiben am Boden - wenn nicht, Stand etwas breiter machen.',
           'Brust hoch, Blick nach vorn, langer Rücken.',
           'Ellenbogen zwischen die Knie und sanft nach außen drücken.',
           'Locker atmen, in die Position hinein entspannen.',
@@ -197,8 +197,8 @@ const MOBILITY_ROUTINES = {
         id: 'fire_hydrant', name: 'Fire Hydrants', side: 'both', pose: 'fire_hydrant', reps: 10,
         setup: 'Im Vierfüßler: Hände unter Schultern, Knie unter Hüfte. Rücken neutral, Bauch leicht angespannt.',
         steps: [
-          'Ein Knie kontrolliert seitlich nach oben heben — Winkel im Knie bleibt bei 90°.',
-          'Becken bleibt parallel zum Boden — nicht mitkippen.',
+          'Ein Knie kontrolliert seitlich nach oben heben - Winkel im Knie bleibt bei 90°.',
+          'Becken bleibt parallel zum Boden - nicht mitkippen.',
           'Oben kurz halten, dann langsam zurück.',
           '10 Wdh pro Seite, dann wechseln.',
         ],
@@ -206,7 +206,7 @@ const MOBILITY_ROUTINES = {
         mistakes: [
           'Becken kippt zur Seite weg',
           'Mit Schwung statt aus dem Po',
-          'Bein zu hoch — Qualität vor Höhe',
+          'Bein zu hoch - Qualität vor Höhe',
         ],
       },
     ],
@@ -222,14 +222,14 @@ const MOBILITY_ROUTINES = {
         setup: 'Aufrecht stehen, Füße hüftbreit. Rechte Hand fasst die linke Schulter zur Stabilisierung.',
         steps: [
           'Linken Arm gestreckt nach vorn und langsam einen großen Kreis zeichnen.',
-          'So langsam wie möglich — 5 Sekunden pro Kreis, voller Bewegungsumfang.',
-          'Rest des Körpers bleibt still — nur die Schulter arbeitet.',
+          'So langsam wie möglich - 5 Sekunden pro Kreis, voller Bewegungsumfang.',
+          'Rest des Körpers bleibt still - nur die Schulter arbeitet.',
           '5 Kreise vorwärts, dann 5 rückwärts.',
         ],
         tip: 'CARs = Controlled Articular Rotations. Je langsamer, desto mehr Kontrolle und Reiz.',
         mistakes: [
           'Schultern mitziehen / Oberkörper drehen',
-          'Zu schnell — Schwung statt Kontrolle',
+          'Zu schnell - Schwung statt Kontrolle',
           'Halber Kreis statt voller Bewegungsumfang',
         ],
       },
@@ -238,20 +238,20 @@ const MOBILITY_ROUTINES = {
         setup: 'Aufrecht stehen, Füße hüftbreit. Linke Hand fasst die rechte Schulter zur Stabilisierung.',
         steps: [
           'Rechten Arm gestreckt nach vorn und langsam einen großen Kreis zeichnen.',
-          'So langsam wie möglich — 5 Sekunden pro Kreis, voller Bewegungsumfang.',
-          'Rest des Körpers bleibt still — nur die Schulter arbeitet.',
+          'So langsam wie möglich - 5 Sekunden pro Kreis, voller Bewegungsumfang.',
+          'Rest des Körpers bleibt still - nur die Schulter arbeitet.',
           '5 Kreise vorwärts, dann 5 rückwärts.',
         ],
         tip: 'CARs = Controlled Articular Rotations. Je langsamer, desto mehr Kontrolle und Reiz.',
         mistakes: [
           'Schultern mitziehen / Oberkörper drehen',
-          'Zu schnell — Schwung statt Kontrolle',
+          'Zu schnell - Schwung statt Kontrolle',
           'Halber Kreis statt voller Bewegungsumfang',
         ],
       },
       {
         id: 'band_dislocate', name: 'Band Pass-Throughs', side: 'both', pose: 'band_dislocate', reps: 12,
-        setup: 'Theraband oder Besenstil sehr weit greifen — breiter als Schulterbreite. Aufrecht stehen.',
+        setup: 'Theraband oder Besenstil sehr weit greifen - breiter als Schulterbreite. Aufrecht stehen.',
         steps: [
           'Mit gestreckten Armen das Band/den Stab nach vorn halten.',
           'Langsam über den Kopf nach hinten führen, ohne Arme zu beugen.',
@@ -269,12 +269,12 @@ const MOBILITY_ROUTINES = {
         id: 'wall_slides', name: 'Wall Slides', side: 'both', pose: 'wall_slides', dur: 45,
         setup: 'Rücken, Po, Kopf an einer Wand. Ellenbogen 90°, Handrücken berühren ebenfalls die Wand.',
         steps: [
-          'Arme langsam an der Wand nach oben gleiten lassen — Kontakt halten.',
+          'Arme langsam an der Wand nach oben gleiten lassen - Kontakt halten.',
           'Soweit hoch, wie Handrücken UND unterer Rücken an der Wand bleiben.',
           'Dann kontrolliert zurück, Schulterblätter nach unten ziehen.',
           'Gleichmäßiges Tempo, ruhig atmen.',
         ],
-        tip: 'Wenn Handrücken sich lösen, bist du am Limit — nicht erzwingen, mit der Zeit wird\'s besser.',
+        tip: 'Wenn Handrücken sich lösen, bist du am Limit - nicht erzwingen, mit der Zeit wird\'s besser.',
         mistakes: [
           'Hohlkreuz machen, um die Arme hochzukriegen',
           'Hände lösen sich von der Wand',
@@ -309,14 +309,14 @@ const MOBILITY_ROUTINES = {
         id: 'open_book_l', name: 'Open Book (links)', side: 'left', pose: 'open_book', reps: 8,
         setup: 'Rechte Seitlage. Knie 90° gebeugt aufeinander, beide Arme nach vorn ausgestreckt auf Schulterhöhe.',
         steps: [
-          'Linken Arm wie ein Buchdeckel öffnen — Richtung Boden hinter dir.',
+          'Linken Arm wie ein Buchdeckel öffnen - Richtung Boden hinter dir.',
           'Blick folgt der Hand, Brust öffnet sich.',
-          'Knie bleiben unten und zusammen — Hüfte wird NICHT mitgedreht.',
+          'Knie bleiben unten und zusammen - Hüfte wird NICHT mitgedreht.',
           'Kurz halten, dann kontrolliert zurück.',
         ],
         tip: 'Wenn der Arm den Boden nicht berührt: kein Problem, Bewegungsumfang wird mit der Zeit größer.',
         mistakes: [
-          'Hüfte/Knie kippen mit auf — Rotation kommt dann aus der LWS',
+          'Hüfte/Knie kippen mit auf - Rotation kommt dann aus der LWS',
           'Schulter hochgezogen',
           'Atem anhalten',
         ],
@@ -325,28 +325,28 @@ const MOBILITY_ROUTINES = {
         id: 'open_book_r', name: 'Open Book (rechts)', side: 'right', pose: 'open_book', reps: 8,
         setup: 'Linke Seitlage. Knie 90° gebeugt aufeinander, beide Arme nach vorn ausgestreckt auf Schulterhöhe.',
         steps: [
-          'Rechten Arm wie ein Buchdeckel öffnen — Richtung Boden hinter dir.',
+          'Rechten Arm wie ein Buchdeckel öffnen - Richtung Boden hinter dir.',
           'Blick folgt der Hand, Brust öffnet sich.',
-          'Knie bleiben unten und zusammen — Hüfte wird NICHT mitgedreht.',
+          'Knie bleiben unten und zusammen - Hüfte wird NICHT mitgedreht.',
           'Kurz halten, dann kontrolliert zurück.',
         ],
         tip: 'Wenn der Arm den Boden nicht berührt: kein Problem, Bewegungsumfang wird mit der Zeit größer.',
         mistakes: [
-          'Hüfte/Knie kippen mit auf — Rotation kommt dann aus der LWS',
+          'Hüfte/Knie kippen mit auf - Rotation kommt dann aus der LWS',
           'Schulter hochgezogen',
           'Atem anhalten',
         ],
       },
       {
         id: 'cat_cow', name: 'Katze-Kuh', side: 'both', pose: 'cat_cow', dur: 60,
-        setup: 'Vierfüßler — Hände unter Schultern, Knie unter Hüfte. Wirbelsäule neutral.',
+        setup: 'Vierfüßler - Hände unter Schultern, Knie unter Hüfte. Wirbelsäule neutral.',
         steps: [
           'EINATMEN: Brust raus, Steißbein hoch, Bauch fällt Richtung Boden (Kuh).',
           'AUSATMEN: Wirbel für Wirbel einrollen, Rücken hoch, Kinn zur Brust (Katze).',
-          'Bewegung kommt aus der ganzen Wirbelsäule — nicht nur LWS.',
+          'Bewegung kommt aus der ganzen Wirbelsäule - nicht nur LWS.',
           'Langsam mit dem Atem, etwa 3-4 Sekunden pro Phase.',
         ],
-        tip: 'Stell dir vor, jeder Wirbel bewegt sich einzeln — von Becken bis Hals.',
+        tip: 'Stell dir vor, jeder Wirbel bewegt sich einzeln - von Becken bis Hals.',
         mistakes: [
           'Nur die LWS bewegt sich',
           'Arme/Beine kollabieren',
@@ -358,14 +358,14 @@ const MOBILITY_ROUTINES = {
         setup: 'Foam Roller quer unter der oberen Brustwirbelsäule. Hände hinterm Kopf, Ellenbogen vor dem Gesicht, Füße aufgestellt.',
         steps: [
           'Po bleibt am Boden, Bauch leicht aktiv.',
-          'Brust langsam nach hinten/unten öffnen — Kopf folgt entspannt.',
+          'Brust langsam nach hinten/unten öffnen - Kopf folgt entspannt.',
           'Pro Position 3-5 Atemzüge halten.',
           'Roller etwas verschieben (jeweils ~2 cm) und nächste Position.',
         ],
-        tip: 'Nur die BWS soll sich strecken, NICHT die LWS — deshalb Po unten lassen.',
+        tip: 'Nur die BWS soll sich strecken, NICHT die LWS - deshalb Po unten lassen.',
         mistakes: [
           'In die LWS strecken (Po hebt sich)',
-          'Roller zu tief — gehört oberhalb der unteren Rippen',
+          'Roller zu tief - gehört oberhalb der unteren Rippen',
           'Hände in den Nacken zerren',
         ],
       },
@@ -373,12 +373,12 @@ const MOBILITY_ROUTINES = {
         id: 'quadruped_rot', name: 'Quadruped Rotation', side: 'both', pose: 'quadruped_rot', reps: 8,
         setup: 'Vierfüßler. Rechte Hand an den Hinterkopf, Ellenbogen zeigt nach unten.',
         steps: [
-          'Rechten Ellenbogen langsam zur Decke öffnen — Rotation aus der BWS.',
+          'Rechten Ellenbogen langsam zur Decke öffnen - Rotation aus der BWS.',
           'Brust folgt der Bewegung, Hüfte bleibt stabil.',
           'Blick begleitet den Ellenbogen.',
           'Kontrolliert zurück. 8 Wdh, dann Seite wechseln.',
         ],
-        tip: 'Hand am Hinterkopf hilft, dass die Rotation aus der Brustwirbelsäule kommt — nicht aus dem Hals.',
+        tip: 'Hand am Hinterkopf hilft, dass die Rotation aus der Brustwirbelsäule kommt - nicht aus dem Hals.',
         mistakes: [
           'Becken kippt mit',
           'Nur der Kopf dreht statt der gesamte Oberkörper',
@@ -398,9 +398,9 @@ const MOBILITY_ROUTINES = {
         setup: 'Im Halbkniestand vor einer Wand. Linker Fuß vorn, Zehen ~10 cm von der Wand entfernt. Ferse fest am Boden.',
         steps: [
           'Linkes Knie Richtung Wand schieben.',
-          'Ferse bleibt zu 100% am Boden — wenn sie sich hebt, Fuß näher ran.',
+          'Ferse bleibt zu 100% am Boden - wenn sie sich hebt, Fuß näher ran.',
           'Knie berührt die Wand idealerweise rechts und links neben dem Knöchel.',
-          '20–30 Wiederholungen leicht wippend.',
+          '20-30 Wiederholungen leicht wippend.',
         ],
         tip: 'Mit der Zeit Fuß weiter weg von der Wand stellen, um mehr Dorsalflexion zu fordern.',
         mistakes: [
@@ -414,9 +414,9 @@ const MOBILITY_ROUTINES = {
         setup: 'Im Halbkniestand vor einer Wand. Rechter Fuß vorn, Zehen ~10 cm von der Wand entfernt. Ferse fest am Boden.',
         steps: [
           'Rechtes Knie Richtung Wand schieben.',
-          'Ferse bleibt zu 100% am Boden — wenn sie sich hebt, Fuß näher ran.',
+          'Ferse bleibt zu 100% am Boden - wenn sie sich hebt, Fuß näher ran.',
           'Knie berührt die Wand idealerweise rechts und links neben dem Knöchel.',
-          '20–30 Wiederholungen leicht wippend.',
+          '20-30 Wiederholungen leicht wippend.',
         ],
         tip: 'Mit der Zeit Fuß weiter weg von der Wand stellen, um mehr Dorsalflexion zu fordern.',
         mistakes: [
@@ -430,14 +430,14 @@ const MOBILITY_ROUTINES = {
         setup: 'Aufrecht stehen, Füße hüftbreit. Optional an einer Stufe für mehr Bewegungsumfang.',
         steps: [
           '3 Sekunden langsam hoch auf die Zehenspitzen.',
-          '1 Sekunde oben halten — hoch wie möglich.',
-          '3 Sekunden langsam ablassen — voller Bewegungsumfang.',
+          '1 Sekunde oben halten - hoch wie möglich.',
+          '3 Sekunden langsam ablassen - voller Bewegungsumfang.',
           'Gleichmäßiges Tempo, ohne Schwung.',
         ],
-        tip: 'Wenn auf einer Stufe: Ferse darf unten unter Stufenniveau gehen — voller Range.',
+        tip: 'Wenn auf einer Stufe: Ferse darf unten unter Stufenniveau gehen - voller Range.',
         mistakes: [
           'Schwung statt Kontrolle',
-          'Halber Range — kaum hoch, kaum runter',
+          'Halber Range - kaum hoch, kaum runter',
           'Knie beugen sich',
         ],
       },
@@ -446,9 +446,9 @@ const MOBILITY_ROUTINES = {
         setup: 'Sitzend oder stehend, ein Bein leicht angehoben.',
         steps: [
           'Langsame, große Kreise mit dem Fuß zeichnen.',
-          'Voller Bewegungsumfang — Zehen so weit wie möglich rotieren.',
+          'Voller Bewegungsumfang - Zehen so weit wie möglich rotieren.',
           '10 Kreise pro Richtung, dann Seite wechseln.',
-          'Rest des Beins bleibt still — nur der Fuß bewegt sich.',
+          'Rest des Beins bleibt still - nur der Fuß bewegt sich.',
         ],
         tip: 'Stell dir vor, du malst mit der großen Zehe ein riesiges Kreissymbol an die Wand.',
         mistakes: [
@@ -467,7 +467,7 @@ const MOBILITY_ROUTINES = {
     exercises: [
       {
         id: 'fb_cat_cow', name: 'Katze-Kuh', side: 'both', pose: 'cat_cow', dur: 45,
-        setup: 'Vierfüßler — Hände unter Schultern, Knie unter Hüfte.',
+        setup: 'Vierfüßler - Hände unter Schultern, Knie unter Hüfte.',
         steps: [
           'EINATMEN: Brust raus, Steißbein hoch (Kuh).',
           'AUSATMEN: Wirbel für Wirbel einrollen (Katze).',
@@ -485,11 +485,11 @@ const MOBILITY_ROUTINES = {
         setup: 'Tiefer Ausfallschritt mit dem linken Fuß vorn. Hände links und rechts vom linken Fuß auf dem Boden.',
         steps: [
           'Rechten (hinteres Bein) Knie aufgestellt oder am Boden.',
-          'Linken Ellenbogen Richtung linken Fuß senken — Hüfte sinkt mit.',
-          'Dann linken Arm zur Decke öffnen, Brust dreht auf — Blick folgt.',
+          'Linken Ellenbogen Richtung linken Fuß senken - Hüfte sinkt mit.',
+          'Dann linken Arm zur Decke öffnen, Brust dreht auf - Blick folgt.',
           'Halten und atmen.',
         ],
-        tip: 'Klassischer Warm-up "Best of" — eine Übung für Hüfte + BWS + Schulter gleichzeitig.',
+        tip: 'Klassischer Warm-up "Best of" - eine Übung für Hüfte + BWS + Schulter gleichzeitig.',
         mistakes: [
           'Vorderes Knie kippt nach innen',
           'Rotation kommt aus der LWS',
@@ -501,11 +501,11 @@ const MOBILITY_ROUTINES = {
         setup: 'Tiefer Ausfallschritt mit dem rechten Fuß vorn. Hände links und rechts vom rechten Fuß auf dem Boden.',
         steps: [
           'Linken (hinteres Bein) Knie aufgestellt oder am Boden.',
-          'Rechten Ellenbogen Richtung rechten Fuß senken — Hüfte sinkt mit.',
-          'Dann rechten Arm zur Decke öffnen, Brust dreht auf — Blick folgt.',
+          'Rechten Ellenbogen Richtung rechten Fuß senken - Hüfte sinkt mit.',
+          'Dann rechten Arm zur Decke öffnen, Brust dreht auf - Blick folgt.',
           'Halten und atmen.',
         ],
-        tip: 'Klassischer Warm-up "Best of" — eine Übung für Hüfte + BWS + Schulter gleichzeitig.',
+        tip: 'Klassischer Warm-up "Best of" - eine Übung für Hüfte + BWS + Schulter gleichzeitig.',
         mistakes: [
           'Vorderes Knie kippt nach innen',
           'Rotation kommt aus der LWS',
@@ -520,7 +520,7 @@ const MOBILITY_ROUTINES = {
           'Ellenbogen zwischen die Knie, sanft nach außen drücken.',
           'In der Position locker atmen.',
         ],
-        tip: 'Hier setzt sich die Hüfte aus der vorherigen Übung — Position ankommen lassen.',
+        tip: 'Hier setzt sich die Hüfte aus der vorherigen Übung - Position ankommen lassen.',
         mistakes: [
           'Rücken rundet ein',
           'Fersen heben sich',
@@ -546,9 +546,9 @@ const MOBILITY_ROUTINES = {
         steps: [
           'Kontrolliert zur anderen Seite wechseln.',
           'Brust hoch, langer Rücken.',
-          'Pro Seite 3–4 Sekunden halten.',
+          'Pro Seite 3-4 Sekunden halten.',
         ],
-        tip: 'Abschluss-Übung — bringt die Hüfte gemütlich zur Ruhe.',
+        tip: 'Abschluss-Übung - bringt die Hüfte gemütlich zur Ruhe.',
         mistakes: [
           'Runder Rücken',
           'Hektisches Werfen',
@@ -559,20 +559,45 @@ const MOBILITY_ROUTINES = {
 };
 
 // ─────────────────────────────────────────────────────────────
-// STORAGE  (theme-scoped so the 3 variants don't fight)
+// STORAGE  (ein geteilter Key: ein Theme ist eine Haut, kein
+// anderer Datensatz. Der theme-Parameter bleibt aus
+// Kompatibilitaet erhalten, wird aber ignoriert.)
 // ─────────────────────────────────────────────────────────────
-function storageKey(theme) {
-  return `fittracker_v2_${theme || 'default'}`;
+const SHARED_STORAGE_KEY = 'fittracker_v2_shared';
+
+function storageKey() {
+  return SHARED_STORAGE_KEY;
 }
 
-function loadState(theme) {
+// Einmalige Migration: aelterer theme-gescopter State
+// (fittracker_v2_beast / _iron / _neon / _default) wird in den
+// geteilten Key uebernommen, sobald dieser noch leer ist. Es
+// gewinnt der reichhaltigste Datensatz (meiste Sessions).
+function migrateLegacyState() {
   try {
-    return JSON.parse(localStorage.getItem(storageKey(theme)) || '{}');
+    if (localStorage.getItem(SHARED_STORAGE_KEY)) return;
+    let best = null, bestScore = -1;
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || k === SHARED_STORAGE_KEY || !k.startsWith('fittracker_v2_')) continue;
+      let parsed;
+      try { parsed = JSON.parse(localStorage.getItem(k) || '{}'); } catch { continue; }
+      const score = (parsed && Array.isArray(parsed.sessions)) ? parsed.sessions.length : 0;
+      if (score > bestScore) { bestScore = score; best = parsed; }
+    }
+    if (best) localStorage.setItem(SHARED_STORAGE_KEY, JSON.stringify(best));
+  } catch (e) { console.warn('migrate failed', e); }
+}
+
+function loadState() {
+  try {
+    migrateLegacyState();
+    return JSON.parse(localStorage.getItem(SHARED_STORAGE_KEY) || '{}');
   } catch { return {}; }
 }
 
 function saveState(theme, state) {
-  try { localStorage.setItem(storageKey(theme), JSON.stringify(state)); }
+  try { localStorage.setItem(SHARED_STORAGE_KEY, JSON.stringify(state)); }
   catch (e) { console.warn('save failed', e); }
 }
 
@@ -736,7 +761,7 @@ function getAC() {
 // Returns the oscillators so a scheduled sound can later be cancelled.
 function _bellAt(ctx, start) {
   const osc = [];
-  // 3 quick strikes of the bell — boxing round ending
+  // 3 quick strikes of the bell - boxing round ending
   [0, 0.18, 0.36].forEach((delay) => {
     // Bell = inharmonic stack
     const partials = [
@@ -848,7 +873,7 @@ const MUSCLE_MAP = {
 const FORM_CUES = {
   squat: {
     setup: 'Stange auf hinteren Schultern, Schulterblätter zusammen, schulterbreit + Zehen leicht raus.',
-    cues: ['Druck in den Boden — Füße spreizen', 'Hüfte und Knie gleichzeitig beugen', 'Brust raus, neutraler Rücken', 'So tief bis Hüfte unter Knie'],
+    cues: ['Druck in den Boden - Füße spreizen', 'Hüfte und Knie gleichzeitig beugen', 'Brust raus, neutraler Rücken', 'So tief bis Hüfte unter Knie'],
     mistakes: ['Knie kollabieren nach innen', 'Hacken heben sich', 'Hüfte schießt vor Brust hoch'],
   },
   bench: {
@@ -857,18 +882,18 @@ const FORM_CUES = {
     mistakes: ['Ellenbogen flaggen aus', 'Po hebt von Bank', 'Stange wandert hoch zum Hals'],
   },
   inclbench: {
-    setup: 'Bank 30–45°, sonst wie Flach-Bank. Stange landet höher (oberes Brustbein).',
+    setup: 'Bank 30-45°, sonst wie Flach-Bank. Stange landet höher (oberes Brustbein).',
     cues: ['Stange Richtung Schlüsselbein', 'Schulterblätter aktiv runter', 'Tempo: 2 sek excentric'],
     mistakes: ['Bank zu steil → wird OHP', 'Schultern ziehen hoch'],
   },
   row: {
-    setup: 'Hüft-Hinge, ~30–45° Oberkörper, Knie leicht gebeugt, Stange am Bauchnabel.',
+    setup: 'Hüft-Hinge, ~30-45° Oberkörper, Knie leicht gebeugt, Stange am Bauchnabel.',
     cues: ['Ellenbogen zur Decke', 'Schulterblätter zusammen', 'Stange am Körper entlang', 'Rücken neutral'],
     mistakes: ['Oberkörper schwingt', 'Mit Bizeps statt Rücken ziehen', 'Tieflage zu flach'],
   },
   row2: {
     setup: 'Wie Langhantelrudern. Bei Maschine/Kabel: Sitz fest, Brust raus.',
-    cues: ['Spüre den Rücken — nicht die Arme', 'Voll durchziehen', '2 sek Halten in Kontraktion'],
+    cues: ['Spüre den Rücken - nicht die Arme', 'Voll durchziehen', '2 sek Halten in Kontraktion'],
     mistakes: ['Schwung', 'Schulter rollen vor'],
   },
   ohp: {
@@ -877,13 +902,13 @@ const FORM_CUES = {
     mistakes: ['Übermäßige Hyperextension Wirbelsäule', 'Stange wandert vor', 'Kein Lockout'],
   },
   ohp_b: {
-    setup: 'Gleich wie OHP — hier mit etwas höherem Volumen (12 Wdh).',
+    setup: 'Gleich wie OHP - hier mit etwas höherem Volumen (12 Wdh).',
     cues: ['Bar Path: gerade hoch', 'Knöchel über Ellenbogen', 'Voller ROM'],
     mistakes: ['Halbe Wdh', 'Lower-Back-Hohlkreuz'],
   },
   deadlift: {
     setup: 'Mid-foot unter Stange, hüftbreit, Stange grenzt an Schienbein. Hüft-Hinge, Brust raus.',
-    cues: ['Lat aktivieren — "Orangen unter Achseln"', 'Stange dicht am Körper', 'Push den Boden weg', 'Glutes oben anspannen'],
+    cues: ['Lat aktivieren - "Orangen unter Achseln"', 'Stange dicht am Körper', 'Push den Boden weg', 'Glutes oben anspannen'],
     mistakes: ['Rundrücken', 'Stange weg vom Körper', 'Hyperextension oben'],
   },
   curl: {
@@ -902,7 +927,7 @@ function getCues(exId) { return FORM_CUES[exId] || null; }
 function getMuscles(exId) { return MUSCLE_MAP[exId] || []; }
 
 // ─────────────────────────────────────────────────────────────
-// FORM ANGLES — soll-bereiche pro übung & phase
+// FORM ANGLES - soll-bereiche pro übung & phase
 // Werte sind grobe biomechanische Richtwerte, verfeinerbar.
 // ─────────────────────────────────────────────────────────────
 const FORM_ANGLES = {
@@ -985,7 +1010,7 @@ function calcStreak(state) {
     if (dates.has(iso)) {
       streak++;
     } else {
-      // skip today's missing — gym day not done yet
+      // skip today's missing - gym day not done yet
       if (iso === today.toISOString().slice(0, 10)) continue;
       break;
     }
@@ -1043,7 +1068,7 @@ function detectPRs(state, currentSessionLog) {
   return prs;
 }
 
-// Detect stall — 2+ sessions same type, same weight, missed reps
+// Detect stall - 2+ sessions same type, same weight, missed reps
 function detectStall(state, sessionId, exId) {
   const sessions = state.sessions.filter(s => s.sessionId === sessionId);
   if (sessions.length < 2) return false;
@@ -1135,13 +1160,13 @@ function playBeep() {
 // ─────────────────────────────────────────────────────────────
 // Queue the rest-end sound `delaySeconds` into the future on the Web Audio
 // render thread. That thread keeps running even when the page's JS timers are
-// throttled — i.e. when the app is backgrounded or the phone screen is locked
+// throttled - i.e. when the app is backgrounded or the phone screen is locked
 // during a pause. Returns a handle whose cancel() stops the queued sound (used
 // when the user skips, adjusts, or closes the timer early).
 //
 // Limits worth knowing: this cannot fire if the browser process is fully
 // closed (no code runs at all), and iOS Safari suspends the AudioContext when
-// backgrounded — so it is best effort within what the web platform allows.
+// backgrounded - so it is best effort within what the web platform allows.
 function scheduleSound(kind, settings, delaySeconds) {
   const noop = { cancel() {} };
   if (!settings || !settings.soundEnabled) return noop;
@@ -1218,7 +1243,7 @@ function getMobilityRoutine(id) { return MOBILITY_ROUTINES[id] || null; }
 function listMobilityRoutines() { return Object.values(MOBILITY_ROUTINES); }
 
 // ─────────────────────────────────────────────────────────────
-// POSE ANALYZER — MediaPipe-basierte Video-Analyse (Browser-only)
+// POSE ANALYZER - MediaPipe-basierte Video-Analyse (Browser-only)
 // ─────────────────────────────────────────────────────────────
 const POSE_SAMPLE_MS = 250;        // Sampling-Abstand zwischen Frames
 const POSE_MAX_DURATION = 60;      // max. Videolänge in Sekunden
@@ -1461,7 +1486,7 @@ async function analyzeVideoForPose(file, exerciseId, onProgress) {
 
     const detected = frames.filter(f => f.angles).length;
     if (detected < 3) {
-      throw new Error('Keine Pose erkannt — achte darauf, dass dein ganzer Körper im Bild ist (seitliche Aufnahme funktioniert am besten).');
+      throw new Error('Keine Pose erkannt - achte darauf, dass dein ganzer Körper im Bild ist (seitliche Aufnahme funktioniert am besten).');
     }
 
     onProgress?.('📸 Wähle Key-Frames …', 0.75);
@@ -1488,15 +1513,15 @@ async function analyzeVideoForPose(file, exerciseId, onProgress) {
     const issues = [];
     keyframes.forEach(kf => {
       kf.checks.forEach(c => {
-        if (c.state === 'error') issues.push(`${kf.phaseLabel}: ${c.label} bei ${c.value}° (Soll ${c.range[0]}–${c.range[1]}°) — ${c.tip}`);
+        if (c.state === 'error') issues.push(`${kf.phaseLabel}: ${c.label} bei ${c.value}° (Soll ${c.range[0]}-${c.range[1]}°) - ${c.tip}`);
       });
     });
     let summary;
     if (!issues.length) {
       const warns = keyframes.flatMap(kf => kf.checks.filter(c => c.state === 'warning').map(c => `${kf.phaseLabel}: ${c.label} ${c.value}° (knapp am Limit)`));
       summary = warns.length
-        ? `Saubere Ausführung — alle Hauptwinkel im grünen Bereich. Knapp:\n- ${warns.join('\n- ')}`
-        : `Saubere Ausführung — alle erkannten Winkel innerhalb der Soll-Bereiche. Weiter so!`;
+        ? `Saubere Ausführung - alle Hauptwinkel im grünen Bereich. Knapp:\n- ${warns.join('\n- ')}`
+        : `Saubere Ausführung - alle erkannten Winkel innerhalb der Soll-Bereiche. Weiter so!`;
     } else {
       summary = `Verbesserungs­potenzial gefunden:\n- ${issues.join('\n- ')}`;
     }

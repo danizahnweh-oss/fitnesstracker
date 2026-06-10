@@ -2,7 +2,7 @@
   "name": "Fitnesstracker",
   "short_name": "FitTracker",
   "description": "Gym Tracker mit Auto-Progression",
-  "start_url": "./Fitnesstracker.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0A0908",

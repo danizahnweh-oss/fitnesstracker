@@ -1,5 +1,5 @@
 /* global React, FT */
-// app-workout-rest.jsx — Rest timer overlay + RPE/RIR helpers
+// app-workout-rest.jsx - Rest timer overlay + RPE/RIR helpers
 //
 // The pause-first heart of the workout: a circular timer that fills,
 // inline reps/RPE/form/note logging during the rest, and audio feedback
@@ -10,7 +10,7 @@ const { useState: useStateRT, useEffect: useEffectRT, useRef: useRefRT } = React
 const VIDEO_SUPPORTED_REST = ['squat', 'bench', 'deadlift'];
 
 // ─────────────────────────────────────────────────────────────
-// REST TIMER OVERLAY — pause + inline data entry
+// REST TIMER OVERLAY - pause + inline data entry
 // ─────────────────────────────────────────────────────────────
 function RestTimerOverlay({ theme, state, setState, exercise, setIdx, weight, set, nextLabel, duration, onUpdateSet, onClose, onOpenPlates }) {
   const [extra, setExtra] = useStateRT(0);
@@ -120,7 +120,7 @@ function RestTimerOverlay({ theme, state, setState, exercise, setIdx, weight, se
         </div>
       </div>
 
-      {/* LOG SECTION — entered DURING the pause */}
+      {/* LOG SECTION - entered DURING the pause */}
       <div style={{ padding: '0 22px 14px' }}>
         <div style={{
           padding: 14, borderRadius: theme.radiusLg,
@@ -148,7 +148,7 @@ function RestTimerOverlay({ theme, state, setState, exercise, setIdx, weight, se
                 {exercise.type === 'compound' && (
                   <button onClick={onOpenPlates} style={{
                     background: theme.surface2, border: `1px solid ${theme.border}`,
-                    color: theme.muted, padding: '4px 8px', borderRadius: 4,
+                    color: theme.muted, padding: '12px 6px', minHeight: 44, borderRadius: 4,
                     fontSize: 10, cursor: 'pointer', fontFamily: theme.fontMono,
                   }}>Plates</button>
                 )}
@@ -158,7 +158,7 @@ function RestTimerOverlay({ theme, state, setState, exercise, setIdx, weight, se
 
           {/* RPE / RIR */}
           <Label theme={theme} style={{ marginBottom: 6 }}>
-            {rpeMode === 'rir' ? 'RIR — Reps in Reserve' : 'RPE — wie schwer war\'s?'}
+            {rpeMode === 'rir' ? 'RIR - Reps in Reserve' : 'RPE - wie schwer war\'s?'}
           </Label>
           {rpeMode === 'rir' ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 4, marginBottom: 10 }}>
@@ -197,7 +197,7 @@ function RestTimerOverlay({ theme, state, setState, exercise, setIdx, weight, se
               { v: 'spotter',  label: '! Spotter', c: theme.danger },
             ].map(o => (
               <button key={o.v} onClick={() => onUpdateSet({ form: o.v })} style={{
-                flex: 1, padding: '8px 6px', borderRadius: theme.radius,
+                flex: 1, padding: '12px 6px', minHeight: 44, borderRadius: theme.radius,
                 background: set.form === o.v ? o.c + '20' : 'transparent',
                 color: set.form === o.v ? o.c : theme.muted,
                 border: `1px solid ${set.form === o.v ? o.c + '60' : theme.border}`,
@@ -214,7 +214,7 @@ function RestTimerOverlay({ theme, state, setState, exercise, setIdx, weight, se
               width: '100%', boxSizing: 'border-box',
               padding: '10px 12px', borderRadius: theme.radius,
               background: theme.bg, border: `1px solid ${theme.border}`,
-              color: theme.text, fontSize: 12, fontFamily: 'inherit', outline: 'none',
+              color: theme.text, fontSize: 16, fontFamily: 'inherit', outline: 'none',
             }} />
         </div>
       </div>
@@ -229,7 +229,12 @@ function RestTimerOverlay({ theme, state, setState, exercise, setIdx, weight, se
             fontFamily: 'inherit', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
-            <span>📹 Letzten Satz analysieren</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+                <rect x="2" y="6" width="13" height="12" rx="2" /><path d="M22 8l-7 4 7 4V8z" />
+              </svg>
+              Letzten Satz analysieren
+            </span>
             <span style={{ color: theme.muted, fontSize: 11, fontFamily: theme.fontMono }}>
               Winkel-Check →
             </span>
@@ -275,7 +280,7 @@ function RestTimerOverlay({ theme, state, setState, exercise, setIdx, weight, se
 function rpeBtnStyle(theme, active, hard) {
   const c = hard ? theme.danger : theme.accent;
   return {
-    padding: '12px 0', borderRadius: theme.radius,
+    padding: '14px 0', minHeight: 44, borderRadius: theme.radius,
     background: active ? c : theme.bg,
     color: active ? theme.accentText : theme.text,
     border: `1px solid ${active ? c : theme.border}`,
@@ -322,7 +327,7 @@ function Stepper({ theme, value, onChange }) {
 
 function tinyBtnRT(theme) {
   return {
-    width: 28, height: 28, borderRadius: theme.radius,
+    width: 44, height: 44, borderRadius: theme.radius,
     background: theme.surface, border: `1px solid ${theme.border}`,
     color: theme.text, fontSize: 16, fontWeight: 700, fontFamily: 'inherit',
     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -332,7 +337,7 @@ function tinyBtnRT(theme) {
 function RestCtl({ theme, onClick, children }) {
   return (
     <button onClick={onClick} style={{
-      flex: 1, padding: '10px 0', borderRadius: theme.radius,
+      flex: 1, padding: '12px 6px', minHeight: 44, borderRadius: theme.radius,
       background: 'rgba(255,255,255,0.06)',
       border: `1px solid ${theme.border}`,
       color: theme.text, fontWeight: 700, fontSize: 12, fontFamily: theme.fontMono,

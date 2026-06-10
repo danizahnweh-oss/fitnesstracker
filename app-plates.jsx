@@ -1,7 +1,7 @@
 /* global React, FT */
-// app-plates.jsx — Plate calculator overlay + barbell visual
+// app-plates.jsx - Plate calculator overlay + barbell visual
 
-const { useState: useStatePl } = React;
+const { useState: useStatePl, useEffect: useEffectPl, useRef: useRefPl } = React;
 
 // ─────────────────────────────────────────────────────────────
 // PLATE CALCULATOR OVERLAY
@@ -9,14 +9,29 @@ const { useState: useStatePl } = React;
 function PlateCalculator({ theme, target: initialTarget, bar: initialBar, onClose }) {
   const [target, setTarget] = useStatePl(initialTarget || 60);
   const [bar, setBar] = useStatePl(initialBar || 20);
+  const closeRef = useRefPl(null);
   const calc = FT.calcPlates(target, bar);
 
+  useEffectPl(() => {
+    const prev = document.activeElement;
+    closeRef.current?.focus();
+    function onKeyDown(e) {
+      if (e.key === 'Escape') onClose();
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      prev?.focus?.();
+    };
+  }, [onClose]);
+
   return (
-    <div style={{
+    <div role="dialog" aria-modal="true" aria-labelledby="plate-calculator-title" style={{
       position: 'absolute', inset: 0, zIndex: 100,
       background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)',
       WebkitBackdropFilter: 'blur(8px)',
       display: 'flex', flexDirection: 'column',
+      overscrollBehavior: 'contain',
       animation: 'fadeIn .2s',
     }} onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{
@@ -27,8 +42,8 @@ function PlateCalculator({ theme, target: initialTarget, bar: initialBar, onClos
         <div style={{ width: 40, height: 4, background: theme.border, borderRadius: 2, margin: '0 auto 18px' }} />
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16 }}>
-          <Heading theme={theme} size="lg">Plate Calculator</Heading>
-          <button onClick={onClose} style={{
+          <Heading theme={theme} size="lg" style={{}}><span id="plate-calculator-title">Scheibenrechner</span></Heading>
+          <button ref={closeRef} type="button" onClick={onClose} style={{
             background: 'transparent', border: 'none', color: theme.muted,
             fontSize: 11, cursor: 'pointer', fontFamily: 'inherit',
             letterSpacing: 0.5, textTransform: 'uppercase',
@@ -38,32 +53,43 @@ function PlateCalculator({ theme, target: initialTarget, bar: initialBar, onClos
         {/* Inputs */}
         <div style={{ display: 'flex', gap: 10, marginBottom: 18 }}>
           <div style={{ flex: 2 }}>
-            <Label theme={theme} style={{ marginBottom: 4 }}>Gesamt</Label>
+            <Label theme={theme} htmlFor="plate-target" style={{ marginBottom: 4 }}>Gesamt</Label>
             <div style={{
               display: 'flex', alignItems: 'center',
               background: theme.surface2, borderRadius: theme.radius,
               border: `1px solid ${theme.border}`, padding: '4px 6px',
             }}>
-              <button onClick={() => setTarget(Math.max(bar, target - 2.5))}
-                style={{ ...tinyBtnPl(theme), width: 36 }}>−</button>
-              <input type="number" value={target} onChange={e => setTarget(parseFloat(e.target.value) || 0)}
-                style={{
-                  flex: 1, textAlign: 'center', background: 'transparent', border: 'none',
-                  color: theme.text, fontSize: 22, fontWeight: 800, fontFamily: theme.fontDisplay,
-                  outline: 'none', width: '100%',
-                }} />
-              <button onClick={() => setTarget(target + 2.5)}
-                style={{ ...tinyBtnPl(theme), width: 36 }}>+</button>
+              <button type="button" aria-label="Gesamtgewicht verringern" onClick={() => setTarget(Math.max(bar, target - 2.5))}
+                style={{ ...tinyBtnPl(theme), width: 44 }}>−</button>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 4, minWidth: 0 }}>
+                <input id="plate-target" name="plateTarget" type="number" min={bar} step="2.5" inputMode="decimal"
+                  aria-label="Gesamtgewicht in Kilogramm"
+                  value={target} onChange={e => setTarget(parseFloat(e.target.value) || 0)}
+                  style={{
+                    textAlign: 'right', background: 'transparent', border: 'none',
+                    color: theme.text, fontSize: 32, fontWeight: 800, fontFamily: theme.fontDisplay,
+                    outline: 'none', width: '100%', minWidth: 0,
+                  }} />
+                <span aria-hidden="true" style={{
+                  fontSize: 11, fontWeight: 700, fontFamily: theme.fontUI,
+                  letterSpacing: 0.6, textTransform: 'uppercase', color: theme.muted, flexShrink: 0,
+                }}>kg</span>
+              </div>
+              <button type="button" aria-label="Gesamtgewicht erhöhen" onClick={() => setTarget(target + 2.5)}
+                style={{ ...tinyBtnPl(theme), width: 44 }}>+</button>
             </div>
           </div>
           <div style={{ flex: 1 }}>
-            <Label theme={theme} style={{ marginBottom: 4 }}>Stange</Label>
-            <select value={bar} onChange={e => setBar(parseFloat(e.target.value))} style={{
-              width: '100%', padding: '11px 8px', borderRadius: theme.radius,
-              background: theme.surface2, border: `1px solid ${theme.border}`,
-              color: theme.text, fontSize: 14, fontWeight: 700,
+            <Label theme={theme} htmlFor="plate-bar" style={{ marginBottom: 4 }}>Stange</Label>
+            <select id="plate-bar" name="plateBar" value={bar} onChange={e => setBar(parseFloat(e.target.value))} style={{
+              width: '100%', padding: '13px 30px 13px 10px', borderRadius: theme.radius,
+              backgroundColor: theme.surface2, border: `1px solid ${theme.border}`,
+              color: theme.text, fontSize: 16, fontWeight: 700,
               fontFamily: 'inherit', outline: 'none',
               appearance: 'none', WebkitAppearance: 'none',
+              backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>\")",
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 9px center',
             }}>
               <option value="20">20 kg</option>
               <option value="15">15 kg</option>
@@ -74,8 +100,8 @@ function PlateCalculator({ theme, target: initialTarget, bar: initialBar, onClos
         </div>
 
         {/* Visual barbell */}
-        <div style={{
-          padding: '20px 0', background: theme.bg, borderRadius: theme.radius,
+        <div aria-live="polite" style={{
+          padding: '20px 0', background: theme.bgGrad, borderRadius: theme.radius,
           marginBottom: 14, display: 'flex', alignItems: 'center', justifyContent: 'center',
           minHeight: 90, overflow: 'hidden',
         }}>
@@ -91,7 +117,7 @@ function PlateCalculator({ theme, target: initialTarget, bar: initialBar, onClos
           <Label theme={theme} style={{ marginBottom: 6 }}>Pro Seite</Label>
           {calc.ok ? (
             calc.plates.length === 0 ? (
-              <div style={{ fontSize: 13, color: theme.muted }}>Nur die Stange — keine Scheiben nötig.</div>
+              <div style={{ fontSize: 13, color: theme.muted }}>Nur die Stange - keine Scheiben nötig.</div>
             ) : (
               <div style={{ fontSize: 14, fontWeight: 700, fontFamily: theme.fontMono, color: theme.text }}>
                 {countPlates(calc.plates).map((p, i) => (
@@ -112,12 +138,12 @@ function PlateCalculator({ theme, target: initialTarget, bar: initialBar, onClos
         {/* Quick presets */}
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {[40, 50, 60, 70, 80, 100, 120].map(w => (
-            <button key={w} onClick={() => setTarget(w)} style={{
-              padding: '6px 10px', borderRadius: theme.radius,
-              background: target === w ? theme.accent : 'transparent',
+            <button key={w} type="button" onClick={() => setTarget(w)} style={{
+              padding: '12px 14px', minHeight: 44, borderRadius: theme.radius,
+              background: target === w ? theme.accent2 : 'transparent',
               color: target === w ? theme.accentText : theme.muted,
-              border: `1px solid ${target === w ? theme.accent : theme.border}`,
-              fontSize: 11, fontWeight: 700, fontFamily: theme.fontMono,
+              border: `1px solid ${target === w ? theme.accent2 : theme.border}`,
+              fontSize: 13, fontWeight: 700, fontFamily: theme.fontMono,
               cursor: 'pointer',
             }}>{w}</button>
           ))}
@@ -129,9 +155,9 @@ function PlateCalculator({ theme, target: initialTarget, bar: initialBar, onClos
 
 function tinyBtnPl(theme) {
   return {
-    width: 32, height: 32, borderRadius: theme.radius,
-    background: theme.surface, border: `1px solid ${theme.border}`,
-    color: theme.text, fontSize: 18, fontWeight: 700, fontFamily: 'inherit',
+    width: 44, height: 44, borderRadius: theme.radius,
+    background: theme.surface2, border: `1px solid ${theme.border}`,
+    color: theme.muted, fontSize: 18, fontWeight: 700, fontFamily: 'inherit',
     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
     flexShrink: 0,
   };
@@ -167,10 +193,10 @@ function BarbellVisual({ theme, plates }) {
         ))}
       </div>
       {/* Bar sleeve */}
-      <div style={{ width: 26, height: 8, background: '#9CA3AF', borderRadius: 1 }} />
+      <div style={{ width: 26, height: 8, background: theme.muted, borderRadius: 1 }} />
       {/* Bar shaft */}
-      <div style={{ width: 50, height: 6, background: '#6B7280', borderRadius: 0 }} />
-      <div style={{ width: 26, height: 8, background: '#9CA3AF', borderRadius: 1 }} />
+      <div style={{ width: 50, height: 6, background: theme.border, borderRadius: 0 }} />
+      <div style={{ width: 26, height: 8, background: theme.muted, borderRadius: 1 }} />
       {/* Right plates */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         {sleeve.map(({ p, key }) => (

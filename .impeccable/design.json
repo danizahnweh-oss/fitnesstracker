@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-09T00:00:00.000Z",
+  "title": "Design System: Fitnesstracker",
+  "extensions": {
+    "colorMeta": {
+      "ember": { "role": "primary", "displayName": "Ember Orange", "canonical": "#FF4D14", "tonalRamp": ["#3D1205", "#62200A", "#8A2F0E", "#B53C12", "#E04714", "#FF4D14", "#FF7A4D", "#FFA582"] },
+      "gold": { "role": "secondary", "displayName": "Signal Gold", "canonical": "#FFB020", "tonalRamp": ["#3D2A05", "#62450A", "#8A610E", "#B57F12", "#E09C18", "#FFB020", "#FFC75C", "#FFDD99"] },
+      "ink": { "role": "neutral", "displayName": "Ink Black", "canonical": "#0A0908", "tonalRamp": ["#0A0908", "#15110E", "#1F1813", "#2C231C", "#3A2E26", "#4A3B30", "#5E4C3E", "#73604F"] },
+      "surface": { "role": "neutral", "displayName": "Surface", "canonical": "#15110E", "tonalRamp": ["#0A0908", "#15110E", "#1F1813", "#2C231C", "#3A2E26", "#4A3B30", "#5E4C3E", "#73604F"] },
+      "text": { "role": "neutral", "displayName": "Bone White", "canonical": "#FAF7F2", "tonalRamp": ["#2B2925", "#46423C", "#625D54", "#807A6F", "#9F988B", "#C0B9AB", "#E2DBCD", "#FAF7F2"] },
+      "muted": { "role": "neutral", "displayName": "Muted Bone", "canonical": "#A39C92", "tonalRamp": ["#2B2925", "#46423C", "#625D54", "#807A6F", "#A39C92", "#C0B9AB", "#E2DBCD", "#FAF7F2"] },
+      "success": { "role": "tertiary", "displayName": "Lime Success", "canonical": "#84CC16", "tonalRamp": ["#1F300A", "#33500F", "#487014", "#5E901A", "#74AE16", "#84CC16", "#A6E04D", "#C6EC85"] },
+      "danger": { "role": "tertiary", "displayName": "Red Danger", "canonical": "#EF4444", "tonalRamp": ["#3D0F0F", "#621818", "#8A2222", "#B52E2E", "#E03A3A", "#EF4444", "#F47878", "#F8A5A5"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display (Anton)", "purpose": "Größte Zahlen und Hero-Headlines, plakatartig eingestanzt." },
+      "headline": { "displayName": "Headline (Anton)", "purpose": "Screen- und Sektionsüberschriften." },
+      "title": { "displayName": "Title (Inter)", "purpose": "Karten-Titel und Übungsnamen." },
+      "body": { "displayName": "Body (Inter)", "purpose": "Fließtext, Beschreibungen, Anleitungen." },
+      "label": { "displayName": "Label (Inter)", "purpose": "Pills, Mikro-Labels, Einheiten-Tags, uppercase." },
+      "mono": { "displayName": "Mono (JetBrains Mono)", "purpose": "Tabellarisch ausgerichtete Messwerte." }
+    },
+    "shadows": [
+      { "name": "card-rest", "value": "0 1px 0 rgba(255,255,255,0.04) inset, 0 18px 30px -22px rgba(0,0,0,0.7)", "purpose": "Standard-Karten: Inset-Lichtkante oben plus weicher Tiefenschatten." },
+      { "name": "frame-lift", "value": "0 30px 60px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.04)", "purpose": "Der iPhone-Mockup-Rahmen, der über der Seite schwebt." },
+      { "name": "ember-glow", "value": "0 8px 24px -8px rgba(255,77,20,0.5)", "purpose": "Nur Primär-Buttons: farbiger Glow in der Akzentfarbe." }
+    ],
+    "motion": [
+      { "name": "press", "value": "transform .08s", "purpose": "Taktiles scale(0.97) beim Drücken interaktiver Elemente." },
+      { "name": "fade", "value": "opacity .15s", "purpose": "Sanfte Opacity-Übergänge bei Zustandswechseln." },
+      { "name": "pulse", "value": "scale(1) → scale(1.015), 2s ease-in-out infinite", "purpose": "Dezentes Pulsieren des primären Start-Buttons auf Home." }
+    ],
+    "breakpoints": [
+      { "name": "device", "value": "iPhone-Mockup, feste mobile Breite im Frame" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Der eine laute Call-to-Action pro Screen.",
+      "html": "<button class=\"ds-btn-primary\">TRAINING STARTEN</button>",
+      "css": ".ds-btn-primary { background: #FF4D14; color: #0A0908; font-family: Inter, system-ui, sans-serif; font-weight: 800; font-size: 15px; letter-spacing: 1.2px; text-transform: uppercase; padding: 14px 22px; border: none; border-radius: 10px; box-shadow: 0 8px 24px -8px rgba(255,77,20,0.5); cursor: pointer; transition: transform .08s, opacity .15s; } .ds-btn-primary:hover { opacity: 0.95; } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 2px solid #FFB020; outline-offset: 3px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Gleichwertige Nebenaktion neben dem Primär-CTA.",
+      "html": "<button class=\"ds-btn-secondary\">VERLAUF</button>",
+      "css": ".ds-btn-secondary { background: #1F1813; color: #FAF7F2; font-family: Inter, system-ui, sans-serif; font-weight: 800; font-size: 15px; letter-spacing: 1.2px; text-transform: uppercase; padding: 14px 22px; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; cursor: pointer; transition: transform .08s; } .ds-btn-secondary:active { transform: scale(0.97); } .ds-btn-secondary:focus-visible { outline: 2px solid #FFB020; outline-offset: 3px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Tertiäre Aktion (Abbrechen, Überspringen).",
+      "html": "<button class=\"ds-btn-ghost\">ÜBERSPRINGEN</button>",
+      "css": ".ds-btn-ghost { background: transparent; color: rgba(250,247,242,0.78); font-family: Inter, system-ui, sans-serif; font-weight: 800; font-size: 15px; letter-spacing: 1.2px; text-transform: uppercase; padding: 14px 22px; border: none; border-radius: 10px; cursor: pointer; transition: transform .08s, color .15s; } .ds-btn-ghost:hover { color: #FAF7F2; } .ds-btn-ghost:active { transform: scale(0.97); } .ds-btn-ghost:focus-visible { outline: 2px solid #FFB020; outline-offset: 3px; }"
+    },
+    {
+      "name": "Pill",
+      "kind": "chip",
+      "refersTo": "pill",
+      "description": "Status- und Einheiten-Tag, vollfarbig oder getönt.",
+      "html": "<span class=\"ds-pill\">+2.5 KG</span>",
+      "css": ".ds-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: rgba(255,77,20,0.09); color: #FF4D14; font-family: Inter, system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Standard-Container auf dunklem Grund mit Haarlinie und weichem Tiefenschatten.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-stat\">82,5</div><div class=\"ds-card-label\">KG · KNIEBEUGE</div></div>",
+      "css": ".ds-card { background: #15110E; border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 18px 30px -22px rgba(0,0,0,0.7); padding: 16px; color: #FAF7F2; } .ds-card-stat { font-family: Anton, 'Bebas Neue', sans-serif; font-size: 40px; line-height: 1; color: #FAF7F2; } .ds-card-label { margin-top: 6px; font-family: Inter, system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: rgba(250,247,242,0.55); }"
+    },
+    {
+      "name": "Number Input",
+      "kind": "input",
+      "refersTo": null,
+      "description": "Zahlenfeld für Gewicht/Wdh. ohne native Spin-Buttons.",
+      "html": "<input class=\"ds-input\" type=\"text\" inputmode=\"decimal\" value=\"82,5\" aria-label=\"Gewicht\" />",
+      "css": ".ds-input { background: #1F1813; color: #FAF7F2; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 16px; padding: 12px 14px; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; width: 100%; } .ds-input:focus-visible { outline: 2px solid #FFB020; outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Das Stahl-Cockpit",
+    "overview": "Die App ist ein Cockpit fürs Eisen: dunkel wie ein Gym im Halblicht, mit einem einzigen glühenden Akzent (Ember-Orange), der wie der Sucher eines Geräts führt. Persönlichkeit: schwer, laut, fokussiert. Anton trägt Überschriften wie eingestanzte Plaketten, monospaced Ziffern stehen für Gewichte wie auf einer Anzeige. Das Produkt liefert drei Häute über demselben UX-Flow (Beast Mode, Iron Pulse, Neon Lift); Beast Mode ist kanonisch, die anderen erben dieselbe Token-Struktur und ändern nur Werte, nie Verhalten.",
+    "keyCharacteristics": [
+      "Dunkler Grund (#0A0908) mit radialem Ember-Glow von oben, nie Flat-Schwarz",
+      "Ein glühender Akzent (#FF4D14) als einzige laute Farbe; Gold (#FFB020) sekundär",
+      "Anton-Display für Zahlen und Headlines, Inter für UI-Text, JetBrains Mono für Messwerte",
+      "iPhone-Frame als bewusster Container (Dynamic Island, Home-Indicator, Safe-Areas)",
+      "Token-getrieben über drei Themes; ein Theme-Wechsel ist rein kosmetisch"
+    ],
+    "rules": [
+      { "name": "Die Ein-Glut-Regel", "body": "Pro Screen leuchtet genau eine Ember-Fläche als primärer Call-to-Action. Wenn zwei Dinge gleichzeitig glühen, glüht keines. Sekundäres lenkt über Gold oder Surface-2.", "section": "colors" },
+      { "name": "Die Kein-Flat-Schwarz-Regel", "body": "Der Hintergrund ist immer der radiale Ember-Verlauf, nie #000. Tiefe entsteht aus dem Glow von oben.", "section": "colors" },
+      { "name": "Die Zahlen-zuerst-Regel", "body": "Jeder Messwert wird groß in Anton oder Mono gesetzt, nie im Body-Stil versteckt. Die Zahl ist der Inhalt; das Label ist nur Beschriftung.", "section": "typography" },
+      { "name": "Die Glow-statt-Schlagschatten-Regel", "body": "Hervorhebung im Dunkeln kommt aus farbigem Glow und der Helligkeitsstaffel, nicht aus harten grauen Schlagschatten.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do den Hintergrund immer als radialen Ember-Verlauf setzen, nie als plattes #000.",
+      "Do pro Screen genau einen Ember-Primär-CTA leuchten lassen.",
+      "Do Messwerte groß in Anton oder JetBrains Mono setzen; die Zahl ist der Held.",
+      "Do neue Farben/Radii aus den Theme-Tokens ziehen, damit alle drei Themes konsistent bleiben.",
+      "Do klickbare Karten als echte <button> mit aria-label rendern und den Gold-Fokusring behalten.",
+      "Do taktiles scale(0.97)-Press-Feedback auf interaktiven Elementen behalten."
+    ],
+    "donts": [
+      "Don't generisch-SaaS bauen: keine hellgrauen Dashboards, keine blauen Default-Buttons, keine identischen Card-Grids.",
+      "Don't verspielt/bunt werden: keine Maskottchen, keine Pastell-Fun-Ästhetik, kein Konfetti.",
+      "Don't zwei Ember-Flächen gleichzeitig leuchten lassen.",
+      "Don't Karten in Karten verschachteln.",
+      "Don't ALL-CAPS-Fließtext setzen; Großbuchstaben gehören nur Headlines und Pills.",
+      "Don't harte graue Schlagschatten verwenden.",
+      "Don't Verhalten zwischen Themes ändern; ein Theme ist eine Haut, kein anderer Flow."
+    ]
+  }
+}

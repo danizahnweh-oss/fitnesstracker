@@ -1,5 +1,5 @@
 /* global React, FT, Btn, Card, Label, Pill */
-// app-coach-video.jsx — Video-Upload + Pose-/Winkel-Analyse (Coach Tab)
+// app-coach-video.jsx - Video-Upload + Pose-/Winkel-Analyse (Coach Tab)
 
 const { useState: useStateV, useEffect: useEffectV, useRef: useRefV, useMemo: useMemoV } = React;
 
@@ -42,7 +42,7 @@ function VideoTab({ theme, state, setState, defaultExerciseId, onClose }) {
     setPhase('analyzing');
     setProgress(0.02);
     setError('');
-    setStatusMsg('🚀 Starte Analyse …');
+    setStatusMsg('Starte Analyse …');
     setResult(null);
     try {
       const report = await FT.analyzeVideoForPose(file, exerciseId, (msg, p) => {
@@ -75,13 +75,18 @@ function VideoTab({ theme, state, setState, defaultExerciseId, onClose }) {
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           marginBottom: 14,
         }}>
-          <Label theme={theme} style={{ margin: 0 }}>📹 Video-Analyse</Label>
-          <button onClick={onClose} style={{
+          <Label theme={theme} style={{ margin: 0 }}>Video-Analyse</Label>
+          <button onClick={onClose} aria-label="Schließen" style={{
             background: 'transparent', border: 'none', color: theme.muted,
             fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-            fontFamily: 'inherit', padding: 0,
+            fontFamily: 'inherit', minHeight: 44, minWidth: 44, padding: '10px 12px',
+            marginRight: -12, justifyContent: 'flex-end',
           }}>
-            ✕ Schließen
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+            Schließen
           </button>
         </div>
       )}
@@ -92,10 +97,10 @@ function VideoTab({ theme, state, setState, defaultExerciseId, onClose }) {
           const def = FT.FORM_ANGLES[id];
           const active = exerciseId === id;
           return (
-            <button key={id} onClick={() => setExerciseId(id)} style={{
-              flex: 1, padding: '10px 8px', borderRadius: theme.radius,
-              background: active ? theme.accent : theme.surface2,
-              color: active ? theme.accentText : theme.text,
+            <button key={id} onClick={() => setExerciseId(id)} aria-pressed={active} style={{
+              flex: 1, minHeight: 44, padding: '12px 8px', borderRadius: theme.radius,
+              background: active ? theme.accent + '22' : theme.surface2,
+              color: active ? theme.accent : theme.text,
               border: `1px solid ${active ? theme.accent : theme.border}`,
               fontSize: 11, fontWeight: 700, fontFamily: 'inherit',
               cursor: 'pointer',
@@ -108,7 +113,7 @@ function VideoTab({ theme, state, setState, defaultExerciseId, onClose }) {
       <Card theme={theme} style={{ padding: 16 }}>
         <Label theme={theme}>Video-Analyse</Label>
         <div style={{ marginTop: 6, fontSize: 13, color: theme.mutedStrong, lineHeight: 1.5 }}>
-          Lade ein kurzes Video (5–60 s) deines Satzes hoch.
+          Lade ein kurzes Video (5-60 s) deines Satzes hoch.
           Am besten <strong>seitlich</strong> aufgenommen mit gut sichtbarem Ganzkörper.
           Die Analyse läuft komplett auf deinem Gerät.
         </div>
@@ -138,8 +143,8 @@ function VideoTab({ theme, state, setState, defaultExerciseId, onClose }) {
           disabled={phase === 'analyzing'}
         >
           {phase === 'analyzing'
-            ? '⏳ Analysiere …'
-            : (result ? '📹 Neues Video aufnehmen' : '📹 Video aufnehmen')}
+            ? 'Analysiere …'
+            : (result ? 'Neues Video aufnehmen' : 'Video aufnehmen')}
         </Btn>
         <div style={{ height: 8 }} />
         <Btn
@@ -149,7 +154,7 @@ function VideoTab({ theme, state, setState, defaultExerciseId, onClose }) {
           onClick={() => galleryRef.current?.click()}
           disabled={phase === 'analyzing'}
         >
-          ⬆️ Aus Galerie hochladen
+          Aus Galerie hochladen
         </Btn>
 
         {phase === 'analyzing' && (
@@ -196,8 +201,14 @@ function VideoTab({ theme, state, setState, defaultExerciseId, onClose }) {
             <div style={{
               marginBottom: 10, padding: 10, borderRadius: theme.radius,
               background: theme.surface2, fontSize: 11, color: theme.muted,
+              display: 'flex', gap: 8,
             }}>
-              ℹ️ Bilder wurden aus Speicherplatz-Gründen verworfen — nur Winkelwerte sind erhalten.
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+                style={{ flexShrink: 0, marginTop: 1 }}>
+                <circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" />
+              </svg>
+              <span>Bilder wurden aus Speicherplatz-Gründen verworfen - nur Winkelwerte sind erhalten.</span>
             </div>
           )}
 
@@ -219,7 +230,7 @@ function VideoTab({ theme, state, setState, defaultExerciseId, onClose }) {
 
           {phase === 'done' && (
             <div style={{ marginTop: 12 }}>
-              <Btn theme={theme} kind="ghost" full onClick={reset}>↺ Neue Analyse</Btn>
+              <Btn theme={theme} kind="ghost" full onClick={reset}>Neue Analyse</Btn>
             </div>
           )}
         </div>
@@ -230,9 +241,15 @@ function VideoTab({ theme, state, setState, defaultExerciseId, onClose }) {
         marginTop: 14, padding: 12, borderRadius: theme.radius,
         background: theme.surface2, fontSize: 10, color: theme.muted,
         fontFamily: theme.fontMono, lineHeight: 1.5,
+        display: 'flex', gap: 8,
       }}>
-        🔒 Video wird lokal verarbeitet — nichts verlässt dein Gerät.
-        Soll-Winkel sind Richtwerte; bei Schmerzen / Verletzungen mit Physio sprechen.
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+          style={{ flexShrink: 0, marginTop: 1 }}>
+          <rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" />
+        </svg>
+        <span>Video wird lokal verarbeitet - nichts verlässt dein Gerät.
+        Soll-Winkel sind Richtwerte; bei Schmerzen / Verletzungen mit Physio sprechen.</span>
       </div>
     </div>
   );
@@ -245,7 +262,7 @@ function KeyframeCard({ theme, kf }) {
       border: `1px solid ${theme.border}`, overflow: 'hidden',
     }}>
       {kf.dataUrl && (
-        <div style={{ position: 'relative', background: '#000' }}>
+        <div style={{ position: 'relative', background: theme.bg }}>
           <img
             src={kf.dataUrl}
             alt={kf.phaseLabel}
@@ -254,7 +271,7 @@ function KeyframeCard({ theme, kf }) {
           <div style={{
             position: 'absolute', left: 8, top: 8,
             padding: '4px 10px', borderRadius: 999,
-            background: 'rgba(0,0,0,0.7)', color: '#fff',
+            background: 'rgba(0,0,0,0.7)', color: theme.text,
             fontSize: 10, fontWeight: 700, letterSpacing: 0.5,
           }}>
             {kf.phaseLabel} · {kf.t.toFixed(1)} s
@@ -279,10 +296,10 @@ function KeyframeCard({ theme, kf }) {
 
 function CheckRow({ theme, check }) {
   const palette = {
-    ok:      { bg: theme.accent + '20', fg: theme.accent || theme.text, label: '✓ ok' },
-    warning: { bg: '#FFB80020',         fg: '#FFB800',                  label: '! knapp' },
-    error:   { bg: theme.danger + '20', fg: theme.danger,               label: '✕ daneben' },
-    unknown: { bg: theme.surface2,      fg: theme.muted,                label: '? unklar' },
+    ok:      { bg: theme.success + '20', fg: theme.success,  label: 'ok' },
+    warning: { bg: theme.accent2 + '20', fg: theme.accent2,  label: 'knapp' },
+    error:   { bg: theme.danger + '20',  fg: theme.danger,   label: 'daneben' },
+    unknown: { bg: theme.surface2,       fg: theme.muted,    label: 'unklar' },
   };
   const p = palette[check.state] || palette.unknown;
   return (
@@ -294,7 +311,7 @@ function CheckRow({ theme, check }) {
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: theme.text }}>{check.label}</div>
         <div style={{ fontSize: 10, color: theme.muted, fontFamily: theme.fontMono, marginTop: 2 }}>
-          {check.value != null ? `${check.value}°` : '—'} · Soll {check.range[0]}–{check.range[1]}°
+          {check.value != null ? `${check.value}°` : '-'} · Soll {check.range[0]}-{check.range[1]}°
         </div>
         {check.state !== 'ok' && check.state !== 'unknown' && check.tip && (
           <div style={{ fontSize: 11, color: theme.mutedStrong, marginTop: 4, lineHeight: 1.4 }}>

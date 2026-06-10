@@ -1,5 +1,5 @@
 /* global React, ReactDOM */
-// app.jsx — Main App component (themed). Single React tree per artboard.
+// app.jsx - Main App component (themed). Single React tree per artboard.
 
 const { useState, useEffect, useRef, useMemo, useCallback } = React;
 const FT = window.FT;
@@ -16,7 +16,7 @@ function useAppState(theme) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// UI primitives — themed
+// UI primitives - themed
 // ─────────────────────────────────────────────────────────────
 function Frame({ theme, children }) {
   const mobile = theme.isMobile;
@@ -140,15 +140,31 @@ function Btn({ theme, kind = 'primary', children, onClick, style = {}, full = fa
   );
 }
 
-function Card({ theme, children, style = {}, onClick }) {
+function Card({ theme, children, style = {}, onClick, ariaLabel }) {
+  const base = {
+    background: theme.surface, borderRadius: theme.radiusLg,
+    border: `1px solid ${theme.border}`,
+    boxShadow: theme.cardShadow,
+    cursor: onClick ? 'pointer' : undefined,
+    ...style,
+  };
+
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} aria-label={ariaLabel} style={{
+        ...base,
+        width: '100%',
+        color: 'inherit',
+        font: 'inherit',
+        textAlign: 'left',
+        padding: style.padding ?? 0,
+        display: style.display,
+      }}>{children}</button>
+    );
+  }
+
   return (
-    <div onClick={onClick} style={{
-      background: theme.surface, borderRadius: theme.radiusLg,
-      border: `1px solid ${theme.border}`,
-      boxShadow: theme.cardShadow,
-      cursor: onClick ? 'pointer' : undefined,
-      ...style,
-    }}>{children}</div>
+    <div style={base}>{children}</div>
   );
 }
 
@@ -181,13 +197,14 @@ function Heading({ theme, children, size = 'lg', style = {} }) {
   );
 }
 
-function Label({ theme, children, style = {} }) {
+function Label({ theme, children, style = {}, htmlFor }) {
+  const Tag = htmlFor ? 'label' : 'div';
   return (
-    <div style={{
+    <Tag htmlFor={htmlFor} style={{
       fontFamily: theme.fontMono, fontSize: 10.5, fontWeight: 600,
       color: theme.muted, letterSpacing: 1.5, textTransform: 'uppercase',
       ...style,
-    }}>{children}</div>
+    }}>{children}</Tag>
   );
 }
 
@@ -214,7 +231,20 @@ function HomeScreen({ theme, state, setState, onStart, onOpenStats, onOpenSettin
 
   // Bodyweight quick-add
   const [bwInput, setBwInput] = useState('');
+  const [bwError, setBwError] = useState('');
   const lastBW = state.bodyweight[state.bodyweight.length - 1];
+
+  function saveBodyweight(e) {
+    e.preventDefault();
+    const v = parseFloat(bwInput.replace(',', '.'));
+    if (!(v > 30 && v < 300)) {
+      setBwError('Bitte einen Wert zwischen 30 und 300 kg eintragen.');
+      return;
+    }
+    setState(s => ({ ...s, bodyweight: [...s.bodyweight, { date: FT.todayISO(), kg: v }] }));
+    setBwInput('');
+    setBwError('');
+  }
 
   return (
     <div style={{
@@ -249,17 +279,19 @@ function HomeScreen({ theme, state, setState, onStart, onOpenStats, onOpenSettin
           <div style={{
             flex: '0 0 auto', padding: '10px 14px',
             borderRadius: theme.radius,
-            background: `linear-gradient(135deg, ${theme.accent}25, ${theme.accent2 || theme.accent}15)`,
-            border: `1px solid ${theme.accent}40`,
+            background: `${theme.accent2}18`,
+            border: `1px solid ${theme.accent2}66`,
             display: 'flex', alignItems: 'center', gap: 8,
           }}>
-            <span style={{ fontSize: 18 }}>🔥</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={theme.accent2} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 3c1.5 3 4 4.5 4 8a4 4 0 0 1-8 0c0-1.2.4-2 1-2.8C9.2 9 9 11 11 11c0-2 1-4 1-8z"/>
+            </svg>
             <div>
-              <div style={{ fontSize: 16, fontWeight: 800, fontFamily: theme.fontDisplay,
-                color: theme.text, lineHeight: 1, letterSpacing: theme.upperHeads ? 0.5 : 0 }}>
+              <div style={{ fontSize: 26, fontWeight: theme.weightHeavy, fontFamily: theme.fontDisplay,
+                color: theme.accent2, lineHeight: 1, letterSpacing: theme.upperHeads ? 0.5 : 0 }}>
                 {streak}
               </div>
-              <div style={{ fontSize: 9.5, color: theme.muted, letterSpacing: 1, textTransform: 'uppercase', fontFamily: theme.fontMono }}>
+              <div style={{ fontSize: 10.5, color: theme.muted, letterSpacing: 1, textTransform: 'uppercase', fontFamily: theme.fontMono, marginTop: 2 }}>
                 Streak
               </div>
             </div>
@@ -273,18 +305,18 @@ function HomeScreen({ theme, state, setState, onStart, onOpenStats, onOpenSettin
         }}>
           {offDay ? (
             <>
-              <span style={{ fontSize: 16 }}>📅</span>
-              <span>Heute wäre <strong style={{ color: theme.accent2 }}>{expectedToday}</strong> dran — du hängst bei <strong>{sessionId}</strong>.</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={theme.accent2} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }} aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
+              <span>Heute wäre <strong style={{ color: theme.accent2 }}>{expectedToday}</strong> dran - du hängst bei <strong>{sessionId}</strong>.</span>
             </>
           ) : restDay ? (
             <>
-              <span style={{ fontSize: 16 }}>☕</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }} aria-hidden="true"><path d="M4 9h12v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h2.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3v2.5M12 3v2.5"/></svg>
               <span>Ruhe-Tag. Trainingstage: Mo · Mi · Fr.</span>
             </>
           ) : (
             <>
-              <span style={{ fontSize: 16 }}>✅</span>
-              <span>Gym-Tag — los geht's.</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={theme.success} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }} aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>Gym-Tag - los geht's.</span>
             </>
           )}
         </div>
@@ -370,42 +402,56 @@ function HomeScreen({ theme, state, setState, onStart, onOpenStats, onOpenSettin
 
       {/* Tools strip */}
       <div style={{ padding: '0 22px 18px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <Card theme={theme} style={{ padding: 14 }} onClick={onOpenPlates}>
+        <Card theme={theme} style={{ padding: 14 }} onClick={onOpenPlates} ariaLabel="Plate Calculator öffnen">
           <Label theme={theme}>Tool</Label>
           <div style={{ marginTop: 6, fontSize: 15, fontWeight: 700 }}>Plate Calc</div>
           <div style={{ fontSize: 11, color: theme.muted, marginTop: 2 }}>Welche Scheiben?</div>
         </Card>
-        <Card theme={theme} style={{ padding: 14 }} onClick={() => {
-          const v = parseFloat(bwInput.replace(',', '.'));
-          if (v > 30 && v < 300) {
-            setState(s => ({ ...s, bodyweight: [...s.bodyweight, { date: FT.todayISO(), kg: v }] }));
-            setBwInput('');
-          }
-        }}>
-          <Label theme={theme}>Bodyweight</Label>
+        <Card theme={theme} style={{ padding: 14 }}>
+          <form onSubmit={saveBodyweight}>
+          <Label theme={theme} htmlFor="bodyweight-quick-add">Bodyweight</Label>
           <div style={{ marginTop: 6, display: 'flex', alignItems: 'baseline', gap: 4 }}>
-            <input value={bwInput} onChange={e => setBwInput(e.target.value)}
-              placeholder={lastBW ? FT.fmtWeight(lastBW.kg) : '—'}
+            <input id="bodyweight-quick-add" name="bodyweight" value={bwInput}
+              onChange={e => { setBwInput(e.target.value); if (bwError) setBwError(''); }}
+              placeholder={lastBW ? FT.fmtWeight(lastBW.kg) : '-'}
+              inputMode="decimal" autoComplete="off" aria-describedby={bwError ? 'bodyweight-error' : undefined}
               style={{
-                width: 50, background: 'transparent', border: 'none', outline: 'none',
-                color: theme.text, fontSize: 15, fontWeight: 700, fontFamily: 'inherit',
+                width: 52, background: 'transparent', border: 'none', outline: 'none',
+                color: theme.text, fontSize: 16, fontWeight: 700, fontFamily: 'inherit',
               }} />
             <span style={{ fontSize: 11, color: theme.muted }}>kg</span>
+            <button type="submit" disabled={!bwInput.trim()} style={{
+              marginLeft: 'auto', minWidth: 44, minHeight: 44, padding: '12px 14px',
+              borderRadius: theme.radius,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              background: bwInput.trim() ? `${theme.accent2}22` : theme.surface2,
+              color: bwInput.trim() ? theme.text : theme.muted,
+              border: `1px solid ${bwInput.trim() ? theme.accent2 : theme.border}`,
+              fontSize: 11, fontWeight: 800, fontFamily: 'inherit', letterSpacing: 0.6,
+              cursor: bwInput.trim() ? 'pointer' : 'not-allowed',
+            }}>OK</button>
           </div>
+          {bwError && (
+            <div id="bodyweight-error" role="alert" style={{ fontSize: 10.5, color: theme.danger, marginTop: 6, lineHeight: 1.35 }}>
+              {bwError}
+            </div>
+          )}
           <div style={{ fontSize: 11, color: theme.muted, marginTop: 2 }}>
             {lastBW ? `zuletzt ${FT.daysAgo(lastBW.date)}` : 'eintragen'}
           </div>
+          </form>
         </Card>
       </div>
 
       {/* Mobility */}
       <div style={{ padding: '0 22px 18px' }}>
         <Card theme={theme} style={{ padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}
-          onClick={onOpenMobility}>
+          onClick={onOpenMobility} ariaLabel="Mobility-Session öffnen">
           <div style={{ minWidth: 0 }}>
             <Label theme={theme}>Beweglichkeit</Label>
             <div style={{ marginTop: 6, fontSize: 16, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span>🧘</span> Mobility-Session
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={theme.accent2} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }} aria-hidden="true"><circle cx="12" cy="4.5" r="2"/><path d="M12 8v5M5 21l7-4 7 4M6 11l6 2 6-2"/></svg>
+              Mobility-Session
             </div>
             <div style={{ fontSize: 11, color: theme.muted, marginTop: 2 }}>Hüfte · Schultern · BWS · mehr</div>
           </div>
@@ -451,7 +497,7 @@ function HomeScreen({ theme, state, setState, onStart, onOpenStats, onOpenSettin
 function IconBtn({ theme, onClick, children, label }) {
   return (
     <button onClick={onClick} aria-label={label} style={{
-      width: 38, height: 38, borderRadius: theme.radius,
+      width: 44, height: 44, borderRadius: theme.radius,
       background: theme.surface, border: `1px solid ${theme.border}`,
       color: theme.text, cursor: 'pointer',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -460,7 +506,7 @@ function IconBtn({ theme, onClick, children, label }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// PROGRESSION BANNER — "Heute steigern: Kniebeugen +2.5kg, …"
+// PROGRESSION BANNER - "Heute steigern: Kniebeugen +2.5kg, …"
 // Only shows when at least one ex actually has a +increment vs last time.
 // ─────────────────────────────────────────────────────────────
 function ProgressionBanner({ theme, session, suggestions, weekNo }) {
@@ -500,7 +546,7 @@ function ProgressionBanner({ theme, session, suggestions, weekNo }) {
         {bumps.length > 0 && (
           <>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <span style={{ fontSize: 16 }}>📈</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={theme.success} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }} aria-hidden="true"><path d="M3 17l5-5 4 4 8-8"/><path d="M16 8h5v5"/></svg>
               <div style={{
                 fontSize: 11, fontWeight: 800, letterSpacing: 1.2,
                 color: theme.success, fontFamily: theme.fontMono,
